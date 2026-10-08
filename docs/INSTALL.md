@@ -1,67 +1,150 @@
-# ListLens — estensione per browser
+# Installare ListLens
 
-Filtra e riordina le liste di qualsiasi sito, solo per te. Tocchi un elemento della lista, ListLens riconosce la struttura e ti dà filtri e ordinamento sui campi (prezzo, anno, regione…).
+ListLens si usa in due modi. Scegli quello che ti serve, i passi sono qui sotto.
 
-Un solo codice (`listlens.js`) per tutte le piattaforme. L'estensione fa due cose:
+- **Bookmarklet.** Un segnalibro del browser che contiene tutto il programma. Non installa nulla, funziona su telefono, tablet e computer. Lo avvii a mano ogni volta che vuoi usarlo.
+- **Estensione.** Un'icona nella barra del browser. Oltre ad avviare ListLens, riapplica da sola i filtri e l'ordine che hai già scelto quando riapri una pagina.
 
-- **Icona nella barra:** avvia ListLens sulla scheda aperta.
-- **Riapplicazione automatica:** sulle pagine per cui hai già configurato filtri e ordine, li rimette da sola al caricamento. Dove non hai configurato nulla non compare niente.
+## Quale scegliere
 
-Tutto resta sul tuo dispositivo: il codice non fa richieste di rete e la configurazione è salvata nella memoria locale della pagina.
+| Dispositivo e browser | Cosa usare |
+|---|---|
+| iPhone o iPad, Safari | Bookmarklet |
+| Android, Chrome | Bookmarklet |
+| Android, Firefox | Bookmarklet. L'estensione solo dopo la pubblicazione su addons.mozilla.org |
+| Windows, Linux, macOS, Chrome o Edge | Estensione |
+| Windows, Linux, macOS, Firefox | Estensione (installazione temporanea) o bookmarklet |
+| macOS, Safari | Bookmarklet. L'estensione richiede Xcode |
 
-## Cosa si genera
+## Prima di iniziare
 
-Dalla radice del repository, `npm install` e poi `npm run build` creano la cartella `dist/`:
+I file di installazione si generano dal repository. Serve Node.js.
+
+```
+npm install
+npm run build
+```
+
+Nella cartella `dist/` trovi:
 
 | File | A cosa serve |
 |---|---|
-| `dist/listlens-extension.zip` | Chrome, Edge e altri browser basati su Chromium (Windows, Linux, macOS) |
-| `dist/listlens-firefox.xpi` | Stesso contenuto per Firefox (desktop e Android) |
-| `dist/bookmarklet.txt` | Codice da incollare in un segnalibro (iPhone, iPad, Android, qualsiasi browser) |
-| `dist/index.html` | Pagina di installazione con la bookmarklet e una lista di prova |
-| `extension/` | Cartella sorgente dell'estensione, caricabile direttamente e usata per la conversione Safari |
+| `bookmarklet.txt` | Il codice del segnalibro: un unico testo che inizia con `javascript:` |
+| `index.html` | Una pagina con il pulsante "Copia bookmarklet", le istruzioni e una lista di prova |
+| `listlens-extension.zip` | L'estensione per Chrome, Edge e altri browser basati su Chromium |
+| `listlens-firefox.xpi` | La stessa estensione per Firefox |
 
-## Installazione per piattaforma
+Per usare la bookmarklet su un telefono devi portarci il codice. Il modo più semplice è aprire su quel telefono la pagina di installazione e toccare "Copia bookmarklet". In alternativa invia `bookmarklet.txt` a te stesso (email, messaggi, AirDrop), aprilo, seleziona tutto il testo e copialo.
 
-### Windows, Linux, macOS — Chrome / Edge
-1. Usa la cartella `extension/` del repository, oppure decomprimi `dist/listlens-extension.zip`.
-2. Apri `chrome://extensions` (o `edge://extensions`) e attiva **Modalità sviluppatore**.
+---
+
+## Bookmarklet
+
+Il procedimento è lo stesso ovunque: crei un segnalibro qualsiasi, poi ne sostituisci l'indirizzo con il codice di ListLens. Prima copia il codice come descritto sopra.
+
+### iPhone e iPad (Safari)
+
+1. Apri un sito qualsiasi. Tocca Condividi, poi **Aggiungi segnalibro** (o Aggiungi ai Preferiti) e salva.
+2. Tocca il pulsante dei Preferiti (l'icona del libro), poi **Modifica**, poi il segnalibro appena creato.
+3. Cambia il titolo in `ListLens`. Nel campo dell'indirizzo cancella tutto e incolla il codice. Tocca **Fine**.
+
+Per usarlo: apri il sito con la lista, tocca l'icona dei Preferiti e poi **ListLens**.
+
+### Android con Firefox
+
+1. Apri un sito qualsiasi e salvalo nei segnalibri dal menu.
+2. Apri i segnalibri, tieni premuto sul nuovo segnalibro e scegli **Modifica**.
+3. Chiamalo `ListLens` e sostituisci l'indirizzo incollando il codice. Salva.
+
+Per usarlo: apri il sito con la lista, poi i segnalibri, e tocca **ListLens**.
+
+### Android con Chrome
+
+1. Salva un sito qualsiasi nei segnalibri dal menu.
+2. Apri i segnalibri, tocca i tre puntini accanto al nuovo segnalibro e scegli **Modifica**.
+3. Chiamalo `ListLens` e sostituisci l'indirizzo incollando il codice. Salva.
+
+Su Chrome il segnalibro non parte se lo tocchi dall'elenco. Per usarlo, sul sito con la lista scrivi `ListLens` nella barra dell'indirizzo e scegli il suggerimento con la stellina.
+
+### Computer (Chrome, Edge, Firefox, Safari)
+
+1. Mostra la barra dei preferiti. Su Chrome ed Edge: Ctrl+Maiusc+B (Cmd+Maiusc+B su Mac).
+2. Aggiungi un nuovo segnalibro alla barra, scegliendo di crearlo a mano o di modificarne uno esistente.
+3. Nome `ListLens`, indirizzo il codice incollato.
+
+Per usarlo: apri il sito con la lista e fai clic sul segnalibro.
+
+---
+
+## Estensione
+
+### Chrome ed Edge (Windows, Linux, macOS)
+
+1. Usa la cartella `extension/` del repository, oppure decomprimi `listlens-extension.zip` in una cartella.
+2. Apri `chrome://extensions` (su Edge `edge://extensions`) e attiva **Modalità sviluppatore**.
 3. Scegli **Carica estensione non pacchettizzata** e seleziona la cartella.
-4. Fissa l'icona di ListLens nella barra degli strumenti.
+4. Fissa l'icona di ListLens nella barra degli strumenti, dal menu a forma di puzzle.
 
-Così resta installata finché non la rimuovi. Per distribuirla ad altri conviene pubblicarla su Chrome Web Store (quota una tantum) o su Edge Add-ons.
+L'estensione resta installata finché non la rimuovi. Per distribuirla ad altre persone va pubblicata su Chrome Web Store (quota una tantum) o su Edge Add-ons.
 
-### Windows, Linux, macOS — Firefox
-- **Prova:** `about:debugging` → Questo Firefox → **Carica componente aggiuntivo temporaneo** → seleziona `manifest.json` nella cartella `extension/`. Si rimuove al riavvio.
-- **Permanente:** va firmata. Si carica su addons.mozilla.org come "non in elenco" (gratuito) e si installa il file firmato.
-- Se la riapplicazione automatica non parte, controlla nei permessi dell'estensione che l'accesso ai dati dei siti sia consentito.
+### Firefox (Windows, Linux, macOS)
 
-### Android
-- **Firefox:** l'estensione funziona, ma Firefox Android installa solo componenti pubblicati su addons.mozilla.org. Serve quindi la pubblicazione sopra.
-- **Chrome:** non supporta le estensioni. Usa la bookmarklet (pagina di installazione di ListLens).
+1. Apri `about:debugging` e scegli **Questo Firefox**.
+2. Premi **Carica componente aggiuntivo temporaneo** e seleziona il file `manifest.json` dentro `extension/`.
 
-### iPhone, iPadOS, macOS — Safari
-Safari richiede di incapsulare l'estensione in un'app. Serve un Mac con Xcode:
+Così l'estensione funziona fino alla chiusura di Firefox. Per averla in modo permanente va firmata: si carica su addons.mozilla.org come "non in elenco" (gratuito) e poi si installa il file firmato.
 
-```
-xcrun safari-web-extension-converter extension --app-name ListLens --bundle-identifier it.tuonome.listlens
-```
+Se i filtri non si riapplicano da soli, controlla nei permessi dell'estensione che l'accesso ai dati dei siti sia consentito.
 
-Poi in Xcode scegli la destinazione (Mac, iPhone, iPad) ed esegui. Sul dispositivo: Impostazioni → Safari → Estensioni → ListLens, e consenti l'accesso ai siti.
+### Firefox su Android
 
-- Con un Apple ID gratuito puoi installarla sui tuoi dispositivi da Xcode, ma il profilo scade dopo un periodo breve e va rifatto.
-- Per averla stabile o distribuirla servono l'Apple Developer Program (a pagamento) e TestFlight o App Store.
-- In alternativa gratuita su iPhone/iPad: la bookmarklet.
+L'estensione funziona, ma Firefox per Android installa solo componenti pubblicati su addons.mozilla.org. Finché non è pubblicata, usa la bookmarklet.
 
-## Permessi richiesti
-- `activeTab` e `scripting`: per avviare ListLens sulla scheda dove tocchi l'icona.
-- Accesso ai siti `http`/`https`: serve solo alla riapplicazione automatica. Senza configurazione salvata lo script termina subito e non modifica la pagina.
+### Safari su iPhone, iPad e Mac
 
-## Limiti noti
-- Se un sito ridisegna la lista da solo (app React e simili), può annullare l'ordinamento. I nuovi elementi caricati scorrendo vengono invece rilevati.
-- La riapplicazione automatica attende la lista per circa 10 secondi; oltre, tocca l'icona.
-- Funziona con liste dentro un unico contenitore. Pagine con più sezioni separate vanno scelte una alla volta.
-- Le pagine interne del browser e gli store delle estensioni non permettono l'esecuzione.
+Safari vuole l'estensione dentro un'app, quindi serve un Mac con Xcode.
 
-## Aggiornare il pacchetto
-Il sorgente è `src/listlens.js`. Dopo ogni modifica esegui `npm run build`: copia il file in `extension/` e rigenera gli archivi. `npm test` controlla anche che le due copie siano allineate.
+1. Dalla cartella del repository esegui:
+   ```
+   xcrun safari-web-extension-converter extension --app-name ListLens --bundle-identifier it.tuonome.listlens
+   ```
+2. Apri il progetto creato in Xcode, scegli la destinazione (Mac, iPhone o iPad) ed esegui.
+3. Sul dispositivo abilita l'estensione: su iPhone e iPad da Impostazioni, Safari, Estensioni, e consenti l'accesso ai siti.
+
+Con un Apple ID gratuito puoi installarla sui tuoi dispositivi da Xcode, ma il profilo scade dopo un periodo breve e va rifatto. Per averla stabile o distribuirla servono l'Apple Developer Program (a pagamento) e TestFlight o l'App Store. In alternativa gratuita su iPhone e iPad resta la bookmarklet.
+
+---
+
+## Controllare che funzioni
+
+1. Apri `dist/index.html` oppure la pagina `demo/demo.html`: è una lista di annunci di auto senza filtri.
+2. Avvia ListLens (segnalibro o icona). In basso compare il pannello **⚡ ListLens** con il pulsante **Scegli la lista**.
+3. Toccalo, poi tocca un'auto qualsiasi. ListLens evidenzia gli annunci simili e indica quanti elementi e campi ha trovato.
+4. Conferma. Dovresti vedere i filtri per regione, prezzo, anno e km, e un menu per ordinare.
+
+## Uso di ogni giorno
+
+1. Apri il sito con la lista e avvia ListLens.
+2. Se hai già configurato quella pagina, ritrovi filtri e ordine. Con l'estensione si riapplicano da soli; con la bookmarklet basta toccarla di nuovo.
+3. Se è la prima volta: **Scegli la lista**, tocca un elemento, **Conferma**, poi usa i filtri.
+4. Per cambiare lista usa **Cambia lista**. Per cancellare ciò che ListLens ricorda di quella pagina usa **Dimentica**.
+
+## Se qualcosa non va
+
+| Problema | Cosa fare |
+|---|---|
+| Il segnalibro non fa nulla | Controlla che l'indirizzo cominci con `javascript:` e che il codice sia stato incollato per intero. Su Chrome per Android avvialo dalla barra dell'indirizzo. Alcuni siti molto protetti bloccano le bookmarklet: prova con l'estensione. |
+| "Non vedo una lista qui" | Tocca un elemento della lista, non lo sfondo o il titolo della pagina. |
+| ListLens evidenzia gli elementi sbagliati | Tocca **Riprova** e scegli un altro punto dentro un elemento della lista. |
+| L'estensione dice che non può partire | Le pagine interne del browser e gli store delle estensioni non permettono l'esecuzione. Apri un sito normale. |
+| L'ordine sparisce da solo | Alcuni siti ridisegnano la lista dopo il caricamento e annullano l'ordinamento. Riavvia ListLens. |
+| Con l'estensione i filtri non tornano da soli | La riapplicazione aspetta la lista per circa 10 secondi. Se la pagina è più lenta, tocca l'icona. Su Firefox controlla i permessi dell'estensione. |
+
+## Permessi e privacy
+
+- L'estensione chiede `activeTab` e `scripting` per avviarsi sulla scheda dove tocchi l'icona, e l'accesso ai siti `http` e `https` solo per la riapplicazione automatica. Se per una pagina non hai salvato nulla, lo script termina subito e non la modifica.
+- Il codice non fa richieste di rete. Filtri e ordine sono salvati nella memoria locale della pagina, sul tuo dispositivo.
+
+## Per chi sviluppa
+
+Il sorgente è `src/listlens.js`. Dopo ogni modifica esegui `npm run build`: copia il file in `extension/` e rigenera gli archivi in `dist/`. `npm test` controlla il comportamento in jsdom e verifica anche che le due copie siano allineate.
