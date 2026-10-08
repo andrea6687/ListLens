@@ -1,0 +1,17 @@
+{
+  "name": "listlens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Filtra e riordina le liste di qualsiasi sito, solo per te",
+  "author": "Andrea Sportello",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "test": "node test/test.mjs",
+    "build": "node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1",
+    "terser": "^5.51.2"
+  }
+}

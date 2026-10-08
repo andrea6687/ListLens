@@ -1,0 +1,215 @@
+<title>ListLens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Schibsted+Grotesk:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: colonna singola da 640px, installazione per piattaforma a schede, poi area di prova con una lista reale */
+:root {
+  --bg: #f2f5f7;
+  --surface: #ffffff;
+  --fg: #13202a;
+  --muted: #566570;
+  --line: #d5dde3;
+  --accent: #0a6f8f;
+  --accent-fg: #ffffff;
+  --code-bg: #e8eef2;
+  --ok: #0d7a4f;
+  --font-ui: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1519; --surface: #151f25; --fg: #e6edf1; --muted: #93a4af; --line: #2a3942;
+    --accent: #4cc0e0; --accent-fg: #04141a; --code-bg: #0a1013; --ok: #52d19a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1519; --surface: #151f25; --fg: #e6edf1; --muted: #93a4af; --line: #2a3942;
+  --accent: #4cc0e0; --accent-fg: #04141a; --code-bg: #0a1013; --ok: #52d19a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 16px; line-height: 1.5; padding-inline: 16px; padding-block: 28px 56px; }
+main { max-width: 640px; margin-inline: auto; display: flex; flex-direction: column; gap: 36px; }
+h1, h2, h3, p { margin: 0; }
+h1 { font-size: clamp(2.2rem, 9vw, 3.2rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; text-wrap: balance; }
+h2 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+.lead { color: var(--muted); font-size: 1.1rem; max-width: 52ch; margin-top: 12px; }
+section { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+button { font: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
+.tab { background: none; border: 0; border-bottom: 3px solid transparent; padding: 10px 14px; color: var(--muted); font-weight: 500; min-height: 44px; margin-bottom: -1px; }
+.tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); font-weight: 700; }
+.panel { display: flex; flex-direction: column; gap: 14px; }
+ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: flex; flex-direction: column; gap: 12px; }
+ol.steps li { counter-increment: s; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; align-items: start; }
+ol.steps li::before { content: counter(s); font-family: var(--font-mono); font-weight: 500; font-size: 0.85rem; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--code-bg); color: var(--fg); }
+.note { font-size: 0.9rem; color: var(--muted); border-left: 3px solid var(--line); padding-left: 12px; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 10px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-fg); font-weight: 700; }
+.btn.ghost { background: transparent; color: var(--accent); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.status { font-size: 0.9rem; color: var(--ok); font-weight: 500; }
+details { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+summary { padding: 12px 14px; cursor: pointer; font-weight: 500; min-height: 44px; }
+textarea { display: block; width: 100%; height: 130px; border: 0; border-top: 1px solid var(--line); background: var(--code-bg); color: var(--fg); font-family: var(--font-mono); font-size: 12px; padding: 12px; resize: vertical; border-radius: 0 0 10px 10px; }
+
+.demo { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.demo-bar { padding: 10px 14px; border-bottom: 1px solid var(--line); font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+ul.lista { list-style: none; margin: 0; padding: 12px; display: grid; gap: 8px; }
+li.car { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+li.car h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 0.9rem; color: var(--muted); }
+.meta .price { color: var(--ok); font-weight: 700; }
+
+.limits { display: grid; gap: 10px; padding-left: 18px; margin: 0; color: var(--muted); }
+.limits li { padding-left: 4px; }
+.limits b { color: var(--fg); font-weight: 700; }
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-bg); padding: 1px 6px; border-radius: 5px; }
+</style>
+
+<main>
+  <header>
+    <p class="eyebrow">Prototipo</p>
+    <h1>ListLens</h1>
+    <p class="lead">Filtra e riordina le liste di qualsiasi sito, solo sul tuo telefono. Tocchi un annuncio, ListLens capisce la lista e ti dà filtri e ordinamento sui suoi campi.</p>
+  </header>
+
+  <section aria-labelledby="inst">
+    <h2 id="inst">Installa sul telefono</h2>
+    <div class="row">
+      <button class="btn" id="copy" type="button">Copia bookmarklet</button>
+      <span class="status" id="copy-status" role="status"></span>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Piattaforma">
+      <button class="tab" role="tab" id="t-ios" aria-selected="true" aria-controls="p-ios" type="button">iPhone</button>
+      <button class="tab" role="tab" id="t-and" aria-selected="false" aria-controls="p-and" type="button" tabindex="-1">Android</button>
+      <button class="tab" role="tab" id="t-pc" aria-selected="false" aria-controls="p-pc" type="button" tabindex="-1">Computer</button>
+    </div>
+    <div class="panel" role="tabpanel" id="p-ios" aria-labelledby="t-ios">
+      <ol class="steps">
+        <li><span>Tocca <b>Copia bookmarklet</b> qui sopra.</span></li>
+        <li><span>In Safari apri una pagina qualsiasi e aggiungila ai Preferiti (Condividi, poi Aggiungi ai Preferiti).</span></li>
+        <li><span>Apri i Preferiti, tieni premuto il nuovo segnalibro e scegli Modifica. Chiamalo <code>ListLens</code> e sostituisci l'indirizzo incollando il codice copiato.</span></li>
+        <li><span>Su un sito con una lista apri Preferiti e tocca <b>ListLens</b>.</span></li>
+      </ol>
+    </div>
+    <div class="panel" id="p-and" role="tabpanel" aria-labelledby="t-and" hidden>
+      <ol class="steps">
+        <li><span>Tocca <b>Copia bookmarklet</b> qui sopra.</span></li>
+        <li><span>Crea un segnalibro di una pagina qualsiasi, poi modificalo: nome <code>ListLens</code>, indirizzo incollato dal codice copiato.</span></li>
+        <li><span><b>Firefox:</b> apri i segnalibri e tocca ListLens. <b>Chrome:</b> scrivi <code>ListLens</code> nella barra degli indirizzi e scegli il suggerimento con la stellina, perché dal menu dei segnalibri non parte.</span></li>
+      </ol>
+    </div>
+    <div class="panel" id="p-pc" role="tabpanel" aria-labelledby="t-pc" hidden>
+      <ol class="steps">
+        <li><span>Mostra la barra dei preferiti e aggiungi un segnalibro chiamato <code>ListLens</code>.</span></li>
+        <li><span>Come indirizzo incolla il codice copiato con il pulsante qui sopra.</span></li>
+        <li><span>Su un sito con una lista fai clic sul segnalibro. Passando il mouse sugli elementi vedi quello che verrà riconosciuto.</span></li>
+      </ol>
+    </div>
+    <details>
+      <summary>Mostra il codice della bookmarklet</summary>
+      <textarea id="code" readonly spellcheck="false" aria-label="Codice della bookmarklet">__BOOKMARKLET__</textarea>
+    </details>
+  </section>
+
+  <section aria-labelledby="usa">
+    <h2 id="usa">Come si usa</h2>
+    <ol class="steps">
+      <li><span>Apri il sito con la lista e avvia ListLens. Tocca <b>Scegli la lista</b>.</span></li>
+      <li><span>Tocca un elemento qualsiasi, per esempio un annuncio. ListLens evidenzia tutti gli elementi simili e legge i campi: prezzo, anno, regione.</span></li>
+      <li><span>Conferma. Per ogni campo trovi il filtro adatto (scelta tra valori, intervallo, ricerca) e un menu per ordinare.</span></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="prova">
+    <h2 id="prova">Provala qui</h2>
+    <p>Una lista di annunci con la regione scritta nel testo, senza filtri. Avvia ListLens e scegli un'auto.</p>
+    <div class="row">
+      <button class="btn ghost" id="run" type="button">Avvia ListLens su questa pagina</button>
+      <span class="status" id="run-status" role="status"></span>
+    </div>
+    <div class="demo">
+      <div class="demo-bar">autousate.example / annunci</div>
+      <ul class="lista" id="demo-lista"></ul>
+    </div>
+  </section>
+
+  <section aria-labelledby="lim">
+    <h2 id="lim">Limiti di questa versione</h2>
+    <ul class="limits">
+      <li><b>Si riapplica a mano.</b> Filtri e ordine vengono ricordati per pagina, ma li ritrovi toccando di nuovo il segnalibro.</li>
+      <li><b>Siti che ridisegnano la lista.</b> Se il sito ricostruisce l'elenco da solo, può annullare l'ordinamento. I nuovi elementi caricati scorrendo vengono invece rilevati.</li>
+      <li><b>Siti molto protetti.</b> Alcuni blocchi di sicurezza possono impedire l'avvio da segnalibro.</li>
+      <li><b>Solo liste dentro un unico contenitore.</b> Le pagine a più sezioni separate vanno scelte una alla volta.</li>
+    </ul>
+  </section>
+</main>
+
+<script type="text/plain" id="ll-src">__SRC__</script>
+<script>
+(function () {
+  var DATA = [
+    ['Fiat Panda 1.2 Easy', 8900, 2018, 85000, 'Lazio'],
+    ['Volkswagen Golf 1.6 TDI', 12500, 2017, 112000, 'Lombardia'],
+    ['Peugeot 208 PureTech', 11200, 2019, 54000, 'Piemonte'],
+    ['BMW 320d Touring', 18900, 2016, 140000, 'Lazio'],
+    ['Renault Clio 1.5 dCi', 7400, 2016, 128000, 'Campania'],
+    ['Toyota Yaris Hybrid', 13800, 2020, 41000, 'Lombardia'],
+    ['Audi A3 Sportback', 16500, 2018, 96000, 'Veneto'],
+    ['Fiat 500X Cross', 14200, 2019, 62000, 'Lazio'],
+    ['Mercedes Classe A 180d', 21500, 2019, 58000, 'Lombardia'],
+    ['Jeep Renegade 1.6 MJT', 15900, 2018, 87000, 'Campania']
+  ];
+  var fmt = function (n) { return n.toLocaleString('it-IT'); };
+  var list = document.getElementById('demo-lista');
+  DATA.forEach(function (r) {
+    var li = document.createElement('li');
+    li.className = 'car';
+    li.innerHTML = '<h3>' + r[0] + '</h3><div class="meta"><span class="price">€ ' + fmt(r[1]) + '</span><span>Anno: ' + r[2] + '</span><span>' + fmt(r[3]) + ' km</span><span class="region">Regione: ' + r[4] + '</span></div>';
+    list.appendChild(li);
+  });
+
+  /* schede */
+  var tabs = [].slice.call(document.querySelectorAll('.tab'));
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      tabs.forEach(function (x) {
+        var on = x === t;
+        x.setAttribute('aria-selected', on ? 'true' : 'false');
+        x.tabIndex = on ? 0 : -1;
+        document.getElementById(x.getAttribute('aria-controls')).hidden = !on;
+      });
+    });
+  });
+
+  /* copia bookmarklet */
+  var code = document.getElementById('code');
+  var cs = document.getElementById('copy-status');
+  document.getElementById('copy').addEventListener('click', function () {
+    var done = function () { cs.textContent = 'Copiato. Ora incollalo nel segnalibro.'; };
+    var fallback = function () {
+      var d = code.closest('details'); if (d) d.open = true;
+      code.focus(); code.select();
+      cs.textContent = 'Selezionato: usa Copia dal menu del telefono.';
+    };
+    try {
+      navigator.clipboard.writeText(code.value).then(done, fallback);
+    } catch (e) { fallback(); }
+  });
+
+  /* prova in pagina: stesso codice della bookmarklet */
+  var rs = document.getElementById('run-status');
+  document.getElementById('run').addEventListener('click', function () {
+    if (window.__listLens) { window.__listLens.toggle(); rs.textContent = 'Pannello aperto o chiuso.'; return; }
+    var s = document.createElement('script');
+    s.textContent = document.getElementById('ll-src').textContent;
+    document.body.appendChild(s);
+    rs.textContent = window.__listLens ? 'Avviato. Usa il pannello in basso.' : 'Non si avvia in questo contesto.';
+  });
+})();
+</script>

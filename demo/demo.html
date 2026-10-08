@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AutoUsate Demo</title>
+<style>
+body{font-family:system-ui,sans-serif;margin:0;background:#f4f4f5;color:#111}
+header{padding:16px;background:#1d4ed8;color:#fff}
+header h1{margin:0;font-size:20px}
+ul.lista{list-style:none;margin:0;padding:12px;display:grid;gap:10px}
+li.car{background:#fff;border-radius:10px;padding:12px}
+li.car h3{margin:0 0 6px;font-size:17px}
+.meta{display:flex;gap:10px;flex-wrap:wrap;font-size:14px;color:#444}
+.price{font-weight:700;color:#047857}
+li.ad{background:#fde68a;padding:12px;border-radius:10px;font-size:14px}
+#more{margin:0 12px 90px;padding:12px 16px;border-radius:10px;border:1px solid #1d4ed8;background:#fff;color:#1d4ed8;font-size:15px}
+</style>
+</head>
+<body>
+<header><h1>AutoUsate Demo</h1></header>
+<ul class="lista" id="lista"></ul>
+<button id="more">Carica altri annunci</button>
+<script>
+const DATA = [
+  ['Fiat Panda 1.2 Easy', 8900, 2018, 85000, 'Lazio'],
+  ['Volkswagen Golf 1.6 TDI', 12500, 2017, 112000, 'Lombardia'],
+  ['Peugeot 208 PureTech', 11200, 2019, 54000, 'Piemonte'],
+  ['BMW 320d Touring', 18900, 2016, 140000, 'Lazio'],
+  ['Renault Clio 1.5 dCi', 7400, 2016, 128000, 'Campania'],
+  ['Toyota Yaris Hybrid', 13800, 2020, 41000, 'Lombardia'],
+  ['Audi A3 Sportback', 16500, 2018, 96000, 'Veneto'],
+  ['Ford Fiesta 1.1', 6900, 2015, 99000, 'Campania'],
+  ['Fiat 500X Cross', 14200, 2019, 62000, 'Lazio'],
+  ['Mercedes Classe A 180d', 21500, 2019, 58000, 'Lombardia'],
+  ['Opel Corsa 1.2', 8200, 2018, 73000, 'Piemonte'],
+  ['Citroën C3 BlueHDi', 9300, 2017, 91000, 'Veneto'],
+  ['Jeep Renegade 1.6 MJT', 15900, 2018, 87000, 'Campania'],
+  ['Alfa Romeo Giulietta', 11800, 2016, 118000, 'Lazio']
+];
+const MORE = [
+  ['Skoda Octavia Wagon', 17300, 2019, 76000, 'Veneto'],
+  ['Kia Sportage 1.6 CRDi', 19800, 2020, 52000, 'Piemonte'],
+  ['Dacia Duster GPL', 12900, 2021, 33000, 'Lazio'],
+  ['Mini Cooper 1.5', 15400, 2018, 64000, 'Lombardia']
+];
+const fmt = n => n.toLocaleString('it-IT');
+const lista = document.getElementById('lista');
+function add(rows) {
+  rows.forEach(([t, p, y, km, r]) => {
+    const li = document.createElement('li');
+    li.className = 'car';
+    li.innerHTML = '<h3>' + t + '</h3><div class="meta"><span class="price">€ ' + fmt(p) + '</span><span>Anno: ' + y + '</span><span>' + fmt(km) + ' km</span><span class="region">Regione: ' + r + '</span></div>';
+    lista.appendChild(li);
+  });
+}
+add(DATA.slice(0, 5));
+const ad = document.createElement('li');
+ad.className = 'ad';
+ad.textContent = 'Pubblicità: finanziamenti auto a tasso zero';
+lista.appendChild(ad);
+add(DATA.slice(5));
+document.getElementById('more').addEventListener('click', () => add(MORE));
+</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "ListLens",
+  "version": "0.1.0",
+  "description": "Filtra e riordina le liste di qualsiasi sito, solo per te. Tocca un elemento e ottieni filtri e ordinamento.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "ListLens",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "permissions": ["activeTab", "scripting"],
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["auto.js", "listlens.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "listlens@asportello",
+      "strict_min_version": "115.0"
+    }
+  }
+}
