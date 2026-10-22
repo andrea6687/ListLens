@@ -68,6 +68,24 @@ function fieldPaths(item) {
   })(item, []);
   return out;
 }
+/* immagini: per i siti con caricamento ritardato l'indirizzo vero sta spesso in data-src e simili */
+const LAZY = ['data-src', 'data-lazy-src', 'data-original', 'data-lazy'];
+function imgSrc(img) {
+  for (const a of LAZY) { const v = img.getAttribute(a); if (v && !/^data:image\/gif/i.test(v)) return v.trim(); }
+  return (img.getAttribute('src') || '').trim();
+}
+function imgPaths(item) {
+  const out = [];
+  (function walk(el, path) {
+    [...el.children].forEach((c, i) => {
+      if (/^(script|style|noscript|svg)$/i.test(c.tagName)) return;
+      const p = path.concat(i);
+      if (c.tagName === 'IMG') out.push({ key: 'img:' + p.join('.'), path: p, src: imgSrc(c), alt: (c.getAttribute('alt') || '').trim() });
+      else walk(c, p);
+    });
+  })(item, []);
+  return out;
+}
 function detectFrom(target) {
   let el = target && target.nodeType === 1 ? target : target && target.parentElement, best = null, depth = 0;
   while (el && el !== document.documentElement && depth < 10) {
@@ -116,6 +134,45 @@ function extract(el, f) {
   if (f.re) t = t.replace(f.re, '');
   return t;
 }
+/* Campo immagine: un'immagine che si ripete identica in più elementi è un segnaposto
+   (es. "foto non disponibile" della categoria); una che compare una volta sola è una foto vera. */
+const PHOTO = '\u0001foto', NONE = '\u0001nessuna';
+function imgEl(el, f) {
+  let n = el;
+  for (const i of f.path) n = n && n.children[i];
+  return n && n.tagName === 'IMG' ? n : null;
+}
+function classifyImgs(f, list) {
+  /* list: [{ src, alt }] uno per elemento; restituisce il gruppo di ciascuno e i nomi dei segnaposto */
+  const cnt = {}, alts = {};
+  list.forEach(({ src, alt }) => { if (src) { cnt[src] = (cnt[src] || 0) + 1; (alts[src] = alts[src] || []).push(alt); } });
+  const labels = {};
+  let k = 1;
+  Object.keys(cnt).filter(s => cnt[s] > 1).forEach(s => {
+    const a = alts[s].find(Boolean);
+    const file = decodeURIComponent((s.split(/[?#]/)[0].split('/').pop() || '')).replace(/\.\w+$/, '').replace(/[-_]+/g, ' ').trim();
+    labels[s] = a || (/^data:/.test(s) || !file ? 'Immagine generica ' + k : file);
+    k++;
+  });
+  f.labels = labels;
+  return list.map(({ src }) => !src ? NONE : cnt[src] > 1 ? src : PHOTO);
+}
+function buildImgField(els) {
+  const agg = new Map(), n = els.length;
+  els.forEach(el => imgPaths(el).forEach(p => {
+    let a = agg.get(p.key);
+    if (!a) { a = { key: p.key, path: p.path, seen: 0 }; agg.set(p.key, a); }
+    a.seen++;
+  }));
+  /* l'immagine principale è di solito la prima presente in quasi tutti gli elementi */
+  for (const a of agg.values()) {
+    if (a.seen < n * 0.5) continue;
+    const f = { key: a.key, path: a.path, name: 'Foto', type: 'img', prefix: null };
+    const groups = classifyImgs(f, els.map(el => { const i = imgEl(el, f); return i ? { src: imgSrc(i), alt: (i.getAttribute('alt') || '').trim() } : { src: '', alt: '' }; }));
+    if (groups.includes(PHOTO) && Object.keys(f.labels).length) return f;
+  }
+  return null;
+}
 function buildFields(els) {
   const agg = new Map(), n = els.length;
   els.forEach(el => fieldPaths(el).forEach(f => {
@@ -157,6 +214,8 @@ function buildFields(els) {
     out.push(prep({ key: a.key, path: a.path, name: uniq, type, prefix }));
     if (out.length >= 12) break;
   }
+  const img = buildImgField(els);
+  if (img) out.push(prep(img));
   return out;
 }
 
@@ -184,9 +243,14 @@ function rebuild() {
   domEls.forEach(el => { const m = document.createComment('ll'); el.before(m); S.markers.push(m); });
   S.rows = domEls.map(el => {
     const v = {}, n = {};
-    S.fields.forEach(f => { v[f.key] = extract(el, f); n[f.key] = f.type === 'num' ? parseNum(v[f.key]) : NaN; });
+    S.fields.forEach(f => { if (f.type === 'img') return; v[f.key] = extract(el, f); n[f.key] = f.type === 'num' ? parseNum(v[f.key]) : NaN; });
     return { el, i: old.has(el) ? old.get(el) : next++, v, n, ok: true };
   }).sort((a, b) => a.i - b.i);
+  /* le immagini si classificano guardando tutta la lista: servono i conteggi di ogni indirizzo */
+  S.fields.filter(f => f.type === 'img').forEach(f => {
+    const groups = classifyImgs(f, S.rows.map(r => { const i = imgEl(r.el, f); return i ? { src: imgSrc(i), alt: (i.getAttribute('alt') || '').trim() } : { src: '', alt: '' }; }));
+    S.rows.forEach((r, k) => { r.v[f.key] = groups[k]; });
+  });
   S.rows.forEach((r, i) => r.i = i);
   S.parent = domEls[0] ? domEls[0].parentElement : null;
   watch();
@@ -211,7 +275,7 @@ function apply() {
   const pass = r => S.fields.every(f => {
     const st = S.filters[f.key];
     if (!st) return true;
-    if (f.type === 'cat') return !st.sel || !st.sel.size || st.sel.has(r.v[f.key]);
+    if (f.type === 'cat' || f.type === 'img') return !st.sel || !st.sel.size || st.sel.has(r.v[f.key]);
     if (f.type === 'num') {
       const x = r.n[f.key];
       if (st.min != null && !(x >= st.min)) return false;
@@ -322,7 +386,8 @@ p{margin:0;font-size:14px;color:#444;line-height:1.4}
 .card{border:1px solid #e5e7eb;border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px}
 .ft{display:flex;justify-content:space-between;gap:8px;font-size:14px}.ex{color:#888;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:50%}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{border:1px solid #d1d5db;background:#fff;border-radius:99px;padding:7px 12px;font-size:14px;color:#111}
+.chip{border:1px solid #d1d5db;background:#fff;border-radius:99px;padding:7px 12px;font-size:14px;color:#111;display:inline-flex;align-items:center;gap:6px;max-width:100%}
+.th{width:24px;height:24px;margin:-3px 0 -3px -6px;border-radius:50%;object-fit:cover;background:#f3f4f6;flex:none}
 .chip.on{background:#2563eb;border-color:#2563eb;color:#fff}
 .mm{display:flex;gap:8px}.mm input,.q{flex:1;min-width:0;min-height:42px;border:1px solid #d1d5db;border-radius:10px;padding:0 10px}
 .ft2{display:flex;gap:8px;flex-wrap:wrap}.ft2 .sec{flex:1;min-width:90px;padding:8px 10px;min-height:38px;font-size:14px}
@@ -345,13 +410,29 @@ function toolsBody() {
   const dirBtn = h('button', { class: 'dir', onclick: e => { if (!S.sort) return; S.sort.dir *= -1; e.currentTarget.textContent = S.sort.dir > 0 ? '▲' : '▼'; apply(); } }, S.sort && S.sort.dir < 0 ? '▼' : '▲');
   const sel = h('select', { onchange: e => { S.sort = e.target.value ? { key: e.target.value, dir: S.sort ? S.sort.dir : 1 } : null; apply(); } },
     h('option', { value: '' }, 'Ordine originale'),
-    S.fields.map(f => h('option', { value: f.key, selected: !!(S.sort && S.sort.key === f.key) }, 'Ordina per ' + f.name)));
+    S.fields.filter(f => f.type !== 'img').map(f => h('option', { value: f.key, selected: !!(S.sort && S.sort.key === f.key) }, 'Ordina per ' + f.name)));
   b.append(h('div', { class: 'row' }, sel, dirBtn));
   S.fields.forEach(f => {
     const st = S.filters[f.key] || (S.filters[f.key] = {});
-    const sample = S.rows[0] ? S.rows[0].v[f.key] : '';
+    const sample = f.type === 'img' ? 'foto vere o immagini generiche' : S.rows[0] ? S.rows[0].v[f.key] : '';
     const card = h('div', { class: 'card' }, h('div', { class: 'ft' }, h('b', {}, f.name), h('span', { class: 'ex' }, sample)));
-    if (f.type === 'cat') {
+    if (f.type === 'img') {
+      const cnt = {};
+      S.rows.forEach(r => { const v = r.v[f.key]; cnt[v] = (cnt[v] || 0) + 1; });
+      const label = v => v === PHOTO ? 'Foto vera' : v === NONE ? 'Senza immagine' : (f.labels && f.labels[v]) || 'Immagine generica';
+      const chips = h('div', { class: 'chips' });
+      /* prima le foto vere, poi i segnaposto più frequenti, in fondo gli elementi senza immagine */
+      const rank = v => v === PHOTO ? 0 : v === NONE ? 2 : 1;
+      Object.entries(cnt).sort((a, c) => rank(a[0]) - rank(c[0]) || c[1] - a[1]).forEach(([v, n]) => {
+        const thumb = v !== PHOTO && v !== NONE ? h('img', { class: 'th', src: v, alt: '' }) : null;
+        chips.append(h('button', { class: 'chip' + (st.sel && st.sel.has(v) ? ' on' : ''), title: label(v), onclick: e => {
+          st.sel = st.sel || new Set();
+          st.sel.has(v) ? st.sel.delete(v) : st.sel.add(v);
+          e.currentTarget.classList.toggle('on'); apply();
+        } }, thumb, label(v) + ' · ' + n));
+      });
+      card.append(chips);
+    } else if (f.type === 'cat') {
       const cnt = {};
       S.rows.forEach(r => { const v = r.v[f.key]; if (v) cnt[v] = (cnt[v] || 0) + 1; });
       const chips = h('div', { class: 'chips' });

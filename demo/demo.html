@@ -10,6 +10,7 @@ header{padding:16px;background:#1d4ed8;color:#fff}
 header h1{margin:0;font-size:20px}
 ul.lista{list-style:none;margin:0;padding:12px;display:grid;gap:10px}
 li.car{background:#fff;border-radius:10px;padding:12px}
+li.car .foto{display:block;width:100%;max-width:240px;height:auto;border-radius:8px;margin-bottom:8px}
 li.car h3{margin:0 0 6px;font-size:17px}
 .meta{display:flex;gap:10px;flex-wrap:wrap;font-size:14px;color:#444}
 .price{font-weight:700;color:#047857}
@@ -23,34 +24,43 @@ li.ad{background:#fde68a;padding:12px;border-radius:10px;font-size:14px}
 <button id="more">Carica altri annunci</button>
 <script>
 const DATA = [
-  ['Fiat Panda 1.2 Easy', 8900, 2018, 85000, 'Lazio'],
-  ['Volkswagen Golf 1.6 TDI', 12500, 2017, 112000, 'Lombardia'],
-  ['Peugeot 208 PureTech', 11200, 2019, 54000, 'Piemonte'],
-  ['BMW 320d Touring', 18900, 2016, 140000, 'Lazio'],
-  ['Renault Clio 1.5 dCi', 7400, 2016, 128000, 'Campania'],
-  ['Toyota Yaris Hybrid', 13800, 2020, 41000, 'Lombardia'],
-  ['Audi A3 Sportback', 16500, 2018, 96000, 'Veneto'],
-  ['Ford Fiesta 1.1', 6900, 2015, 99000, 'Campania'],
-  ['Fiat 500X Cross', 14200, 2019, 62000, 'Lazio'],
-  ['Mercedes Classe A 180d', 21500, 2019, 58000, 'Lombardia'],
-  ['Opel Corsa 1.2', 8200, 2018, 73000, 'Piemonte'],
-  ['Citroën C3 BlueHDi', 9300, 2017, 91000, 'Veneto'],
-  ['Jeep Renegade 1.6 MJT', 15900, 2018, 87000, 'Campania'],
-  ['Alfa Romeo Giulietta', 11800, 2016, 118000, 'Lazio']
+  ['Fiat Panda 1.2 Easy', 8900, 2018, 85000, 'Lazio', 'f'],
+  ['Volkswagen Golf 1.6 TDI', 12500, 2017, 112000, 'Lombardia', 'u'],
+  ['Peugeot 208 PureTech', 11200, 2019, 54000, 'Piemonte', 'f'],
+  ['BMW 320d Touring', 18900, 2016, 140000, 'Lazio', 'f'],
+  ['Renault Clio 1.5 dCi', 7400, 2016, 128000, 'Campania', 'u'],
+  ['Toyota Yaris Hybrid', 13800, 2020, 41000, 'Lombardia', 'f'],
+  ['Audi A3 Sportback', 16500, 2018, 96000, 'Veneto', 'f'],
+  ['Ford Fiesta 1.1', 6900, 2015, 99000, 'Campania', 'u'],
+  ['Fiat 500X Cross', 14200, 2019, 62000, 'Lazio', 's'],
+  ['Mercedes Classe A 180d', 21500, 2019, 58000, 'Lombardia', 'f'],
+  ['Opel Corsa 1.2', 8200, 2018, 73000, 'Piemonte', 'f'],
+  ['Citroën C3 BlueHDi', 9300, 2017, 91000, 'Veneto', 'f'],
+  ['Jeep Renegade 1.6 MJT', 15900, 2018, 87000, 'Campania', 's'],
+  ['Alfa Romeo Giulietta', 11800, 2016, 118000, 'Lazio', 'f']
 ];
 const MORE = [
-  ['Skoda Octavia Wagon', 17300, 2019, 76000, 'Veneto'],
-  ['Kia Sportage 1.6 CRDi', 19800, 2020, 52000, 'Piemonte'],
-  ['Dacia Duster GPL', 12900, 2021, 33000, 'Lazio'],
-  ['Mini Cooper 1.5', 15400, 2018, 64000, 'Lombardia']
+  ['Skoda Octavia Wagon', 17300, 2019, 76000, 'Veneto', 'f'],
+  ['Kia Sportage 1.6 CRDi', 19800, 2020, 52000, 'Piemonte', 's'],
+  ['Dacia Duster GPL', 12900, 2021, 33000, 'Lazio', 'f'],
+  ['Mini Cooper 1.5', 15400, 2018, 64000, 'Lombardia', 'u']
 ];
 const fmt = n => n.toLocaleString('it-IT');
+/* foto: ogni foto vera è diversa; gli annunci senza foto mostrano l'immagine generica della categoria */
+const svg = (bg, txt) => 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="160" height="100"><rect width="160" height="100" fill="' + bg + '"/><text x="80" y="56" font-size="13" text-anchor="middle" fill="#fff" font-family="sans-serif">' + txt + '</text></svg>');
+const PLACEHOLDER = {
+  u: [svg('#9ca3af', 'Utilitaria'), 'Foto non disponibile: utilitaria'],
+  s: [svg('#6b7280', 'SUV'), 'Foto non disponibile: SUV']
+};
+let nFoto = 0;
+const photo = (t, k) => k === 'f' ? [svg('hsl(' + (nFoto++ * 37 % 360) + ',55%,45%)', t.split(' ')[0]), t] : PLACEHOLDER[k];
 const lista = document.getElementById('lista');
 function add(rows) {
-  rows.forEach(([t, p, y, km, r]) => {
+  rows.forEach(([t, p, y, km, r, k]) => {
     const li = document.createElement('li');
     li.className = 'car';
-    li.innerHTML = '<h3>' + t + '</h3><div class="meta"><span class="price">€ ' + fmt(p) + '</span><span>Anno: ' + y + '</span><span>' + fmt(km) + ' km</span><span class="region">Regione: ' + r + '</span></div>';
+    const [src, alt] = photo(t, k);
+    li.innerHTML = '<img class="foto" src="' + src + '" alt="' + alt + '"><h3>' + t + '</h3><div class="meta"><span class="price">€ ' + fmt(p) + '</span><span>Anno: ' + y + '</span><span>' + fmt(km) + ' km</span><span class="region">Regione: ' + r + '</span></div>';
     lista.appendChild(li);
   });
 }
