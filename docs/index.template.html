@@ -61,6 +61,7 @@ textarea { display: block; width: 100%; height: 130px; border: 0; border-top: 1p
 .demo-bar { padding: 10px 14px; border-bottom: 1px solid var(--line); font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
 ul.lista { list-style: none; margin: 0; padding: 12px; display: grid; gap: 8px; }
 li.car { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+li.car .foto { display: block; width: 100%; max-width: 200px; height: auto; border-radius: 8px; margin-bottom: 8px; }
 li.car h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
 .meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 0.9rem; color: var(--muted); }
 .meta .price { color: var(--ok); font-weight: 700; }
@@ -121,14 +122,14 @@ code { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-
     <h2 id="usa">Come si usa</h2>
     <ol class="steps">
       <li><span>Apri il sito con la lista e avvia ListLens. Tocca <b>Scegli la lista</b>.</span></li>
-      <li><span>Tocca un elemento qualsiasi, per esempio un annuncio. ListLens evidenzia tutti gli elementi simili e legge i campi: prezzo, anno, regione.</span></li>
-      <li><span>Conferma. Per ogni campo trovi il filtro adatto (scelta tra valori, intervallo, ricerca) e un menu per ordinare.</span></li>
+      <li><span>Tocca un elemento qualsiasi, per esempio un annuncio. ListLens evidenzia tutti gli elementi simili e legge i campi: prezzo, anno, regione, foto.</span></li>
+      <li><span>Conferma. Per ogni campo trovi il filtro adatto (scelta tra valori, intervallo, ricerca) e un menu per ordinare. Con <b>Foto</b> puoi tenere solo le foto vere o solo le immagini generiche di una categoria.</span></li>
     </ol>
   </section>
 
   <section aria-labelledby="prova">
     <h2 id="prova">Provala qui</h2>
-    <p>Una lista di annunci con la regione scritta nel testo, senza filtri. Avvia ListLens e scegli un'auto.</p>
+    <p>Una lista di annunci senza filtri. Alcune auto non hanno la foto e mostrano l'immagine generica della categoria (utilitaria o SUV). Avvia ListLens e scegli un'auto: tra i filtri trovi anche <b>Foto</b>.</p>
     <div class="row">
       <button class="btn ghost" id="run" type="button">Avvia ListLens su questa pagina</button>
       <span class="status" id="run-status" role="status"></span>
@@ -154,23 +155,29 @@ code { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-
 <script>
 (function () {
   var DATA = [
-    ['Fiat Panda 1.2 Easy', 8900, 2018, 85000, 'Lazio'],
-    ['Volkswagen Golf 1.6 TDI', 12500, 2017, 112000, 'Lombardia'],
-    ['Peugeot 208 PureTech', 11200, 2019, 54000, 'Piemonte'],
-    ['BMW 320d Touring', 18900, 2016, 140000, 'Lazio'],
-    ['Renault Clio 1.5 dCi', 7400, 2016, 128000, 'Campania'],
-    ['Toyota Yaris Hybrid', 13800, 2020, 41000, 'Lombardia'],
-    ['Audi A3 Sportback', 16500, 2018, 96000, 'Veneto'],
-    ['Fiat 500X Cross', 14200, 2019, 62000, 'Lazio'],
-    ['Mercedes Classe A 180d', 21500, 2019, 58000, 'Lombardia'],
-    ['Jeep Renegade 1.6 MJT', 15900, 2018, 87000, 'Campania']
+    ['Fiat Panda 1.2 Easy', 8900, 2018, 85000, 'Lazio', 'f'],
+    ['Volkswagen Golf 1.6 TDI', 12500, 2017, 112000, 'Lombardia', 'u'],
+    ['Peugeot 208 PureTech', 11200, 2019, 54000, 'Piemonte', 'f'],
+    ['BMW 320d Touring', 18900, 2016, 140000, 'Lazio', 'f'],
+    ['Renault Clio 1.5 dCi', 7400, 2016, 128000, 'Campania', 'u'],
+    ['Toyota Yaris Hybrid', 13800, 2020, 41000, 'Lombardia', 'f'],
+    ['Audi A3 Sportback', 16500, 2018, 96000, 'Veneto', 'f'],
+    ['Fiat 500X Cross', 14200, 2019, 62000, 'Lazio', 's'],
+    ['Mercedes Classe A 180d', 21500, 2019, 58000, 'Lombardia', 'f'],
+    ['Jeep Renegade 1.6 MJT', 15900, 2018, 87000, 'Campania', 's']
   ];
   var fmt = function (n) { return n.toLocaleString('it-IT'); };
+  /* foto: ogni foto vera è diversa; gli annunci senza foto mostrano l'immagine generica della categoria */
+  var svg = function (bg, txt) { return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="160" height="100"><rect width="160" height="100" fill="' + bg + '"/><text x="80" y="56" font-size="13" text-anchor="middle" fill="#fff" font-family="sans-serif">' + txt + '</text></svg>'); };
+  var PH = { u: [svg('#9ca3af', 'Utilitaria'), 'Foto non disponibile: utilitaria'], s: [svg('#6b7280', 'SUV'), 'Foto non disponibile: SUV'] };
+  var nFoto = 0;
+  var photo = function (t, k) { return k === 'f' ? [svg('hsl(' + (nFoto++ * 37 % 360) + ',55%,45%)', t.split(' ')[0]), t] : PH[k]; };
   var list = document.getElementById('demo-lista');
   DATA.forEach(function (r) {
     var li = document.createElement('li');
     li.className = 'car';
-    li.innerHTML = '<h3>' + r[0] + '</h3><div class="meta"><span class="price">€ ' + fmt(r[1]) + '</span><span>Anno: ' + r[2] + '</span><span>' + fmt(r[3]) + ' km</span><span class="region">Regione: ' + r[4] + '</span></div>';
+    var ph = photo(r[0], r[5]);
+    li.innerHTML = '<img class="foto" src="' + ph[0] + '" alt="' + ph[1] + '"><h3>' + r[0] + '</h3><div class="meta"><span class="price">€ ' + fmt(r[1]) + '</span><span>Anno: ' + r[2] + '</span><span>' + fmt(r[3]) + ' km</span><span class="region">Regione: ' + r[4] + '</span></div>';
     list.appendChild(li);
   });
 
