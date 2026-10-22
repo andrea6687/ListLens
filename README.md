@@ -11,7 +11,8 @@ Molti siti mostrano un elenco (annunci, prodotti, offerte) senza filtri né ordi
 3. Conferma. Per ogni campo ottieni il controllo adatto:
    - **valori ripetuti** (regione, carburante): chip da attivare, con il conteggio;
    - **numeri** (prezzo, anno, km): intervallo da/a. Legge i formati italiani come `€ 12.500` e `85.000 km`;
-   - **testo libero**: ricerca.
+   - **testo libero**: ricerca;
+   - **foto**: chip per mostrare solo gli annunci con una foto vera oppure solo quelli con l'immagine generica di una categoria (per esempio "foto non disponibile"), ognuna con la sua miniatura. È facoltativo e si combina con gli altri filtri.
    Un menu permette di ordinare per qualsiasi campo, crescente o decrescente.
 
 I filtri e l'ordine vengono ricordati per pagina. Con l'estensione si riapplicano da soli al caricamento. Gli elementi che il sito aggiunge scorrendo vengono rilevati e filtrati.
@@ -59,6 +60,7 @@ Coprono rilevamento della lista, tipi di campo, formati numerici, filtri, ordina
 - Funziona con liste dentro un unico contenitore. Pagine con più sezioni separate vanno scelte una alla volta.
 - Alcuni siti con protezioni molto rigide possono bloccare l'avvio da bookmarklet.
 - Le date non hanno ancora un controllo dedicato: si filtrano come testo.
+- Il filtro foto legge solo le immagini vere e proprie (`<img>`), non quelle messe come sfondo con il CSS. Un'immagine è considerata generica quando compare identica in almeno due annunci.
 
 ## Idee per dopo
 
