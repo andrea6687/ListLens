@@ -56,11 +56,11 @@ Coprono rilevamento della lista, tipi di campo, formati numerici, filtri, ordina
 
 ## Limiti noti
 
-- Se un sito ridisegna la lista da solo (app React e simili), può annullare l'ordinamento. I nuovi elementi caricati scorrendo vengono invece rilevati.
+- Se un sito ridisegna la lista da solo (app React e simili) mantenendo gli stessi elementi, può annullare l'ordinamento. Gli elementi nuovi o sostituiti (scorrendo, cambiando pagina, con una nuova ricerca) vengono invece rilevati e filtrati.
 - Funziona con liste dentro un unico contenitore. Pagine con più sezioni separate vanno scelte una alla volta.
 - Alcuni siti con protezioni molto rigide possono bloccare l'avvio da bookmarklet.
 - Le date non hanno ancora un controllo dedicato: si filtrano come testo.
-- Il filtro foto legge solo le immagini vere e proprie (`<img>`), non quelle messe come sfondo con il CSS. Un'immagine è considerata generica quando compare identica in almeno due annunci.
+- Il filtro foto legge solo le immagini vere e proprie (`<img>`), non quelle messe come sfondo con il CSS. Un'immagine è considerata generica quando compare identica in almeno due annunci, oppure quando il nome del file lo dice (`placeholder`, `no-image`, `nofoto`…). Le immagini generiche già riconosciute vengono ricordate, anche sulle pagine dove ne compare una sola.
 
 ## Idee per dopo
 

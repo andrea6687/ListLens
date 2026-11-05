@@ -185,5 +185,77 @@ w6.eval(src);
 const v6 = [...w6.document.querySelectorAll('.it')].filter(e => e.style.display !== 'none').length;
 check('AUTO: filtro immagine generica riapplicato', v6 === 2, String(v6));
 
+// F: immagini, casi difficili
+const mkImgs = (rows, url) => {
+  const html = rows.map(([img, alt, t], i) => `<div class="it"><img src="${img}" alt="${alt}"><h4>${t}</h4><span class="price">€ ${i + 1}00</span></div>`).join('');
+  return new JSDOM(`<!doctype html><body><main id="m">${html}</main></body>`, { runScripts: 'dangerously', url, pretendToBeVisual: true }).window;
+};
+const startImgs = (rows, url) => { const wx = mkImgs(rows, url); wx.eval(src); const Lx = wx.__listLens; Lx.startFrom(wx.document.querySelector('.it h4')); return { wx, Lx, fx: Lx.S.fields.find(f => f.type === 'img') }; };
+{
+  let r; try { r = startImgs([['a.jpg', '', 'A'], ['foto%ZZ.png', '', 'B'], ['b.jpg', '', 'C'], ['foto%ZZ.png', '', 'D']], 'https://pct.test/'); } catch (e) { r = null; }
+  check('immagini: indirizzo con % non valido non blocca', !!(r && r.fx), r && JSON.stringify(r.fx && r.fx.labels));
+  const { fx } = startImgs([['a.jpg', 'Panda', 'Panda'], ['/img/ph-auto.png', 'Golf', 'Golf'], ['b.jpg', 'Clio', 'Clio'], ['/img/ph-auto.png', 'Yaris', 'Yaris']], 'https://alt.test/');
+  check('immagini: titolo dell\'annuncio non usato come nome del segnaposto', fx && fx.labels['/img/ph-auto.png'] === 'ph auto', fx && JSON.stringify(fx.labels));
+  const one = startImgs([['a.jpg', '', 'A'], ['/img/no-image.png', '', 'B'], ['b.jpg', '', 'C'], ['c.jpg', '', 'D']], 'https://one.test/');
+  check('immagini: segnaposto riconosciuto dal nome anche se compare una volta', one.fx && one.fx.ph.includes('/img/no-image.png'));
+}
+{
+  // il segnaposto salvato resta tale su una pagina in cui compare una sola volta
+  const a = startImgs([['a.jpg', '', 'A'], ['/img/ph1.png', '', 'B'], ['b.jpg', '', 'C'], ['/img/ph1.png', '', 'D']], 'https://mem.test/lista');
+  a.Lx.confirm();
+  a.Lx.S.filters[a.fx.key] = { sel: new Set(['\u0001foto']) };
+  a.Lx.apply();
+  const wb = mkImgs([['x.jpg', '', 'X'], ['/img/ph1.png', '', 'Y'], ['y.jpg', '', 'Z'], ['z.jpg', '', 'W']], 'https://mem.test/lista');
+  wb.localStorage.setItem('listlens:mem.test/lista', a.wx.localStorage.getItem('listlens:mem.test/lista'));
+  wb.__LISTLENS_AUTO = true; wb.eval(src);
+  const vb = [...wb.document.querySelectorAll('.it')].filter(e => e.style.display !== 'none').map(e => e.querySelector('h4').textContent);
+  check('immagini: segnaposto ricordato tra una pagina e l\'altra', vb.join('|') === 'X|Z|W', vb.join('|'));
+}
+
+// G: il sito sostituisce gli annunci con altrettanti nuovi (pagina 2): i filtri si riapplicano
+{
+  const wg = new JSDOM(html, { runScripts: 'dangerously', url: 'https://demo.test/pag', pretendToBeVisual: true }).window;
+  wg.eval(src);
+  const Lg = wg.__listLens;
+  Lg.startFrom(wg.document.querySelector('li.car h3')); Lg.confirm();
+  const rg = Lg.S.fields.find(f => f.name === 'Regione');
+  Lg.S.filters[rg.key] = { sel: new Set(['Lazio']) }; Lg.apply();
+  wg.document.querySelectorAll('li.car').forEach(c => { const n = c.cloneNode(true); n.removeAttribute('style'); n.removeAttribute('data-ll-h'); c.replaceWith(n); });
+  await new Promise(r => setTimeout(r, 400));
+  const vg = [...wg.document.querySelectorAll('li.car')].filter(e => e.style.display !== 'none').length;
+  check('cambio pagina con lo stesso numero di annunci: filtro riapplicato', vg === 4, String(vg));
+  // il sito sostituisce tutto il contenitore
+  const ul = wg.document.querySelector('ul.lista'); const ul2 = ul.cloneNode(true);
+  ul2.querySelectorAll('li').forEach(li => { li.removeAttribute('style'); li.removeAttribute('data-ll-h'); });
+  [...ul2.childNodes].filter(n => n.nodeType === 8).forEach(n => n.remove());
+  ul.replaceWith(ul2);
+  await new Promise(r => setTimeout(r, 400));
+  const vg2 = [...wg.document.querySelectorAll('li.car')].filter(e => e.style.display !== 'none').length;
+  check('contenitore della lista sostituito: filtro riapplicato', vg2 === 4, String(vg2));
+
+  // H: valore selezionato che non c'è più: chip visibile e acceso con 0
+  Lg.S.filters[rg.key] = { sel: new Set(['Molise']) }; Lg.apply();
+  Lg.S.open = true; Lg.toggle(); Lg.toggle();
+  const chipsG = [...wg.document.getElementById('listlens-host').shadowRoot.querySelectorAll('.chip.on')].map(c => c.textContent);
+  check('valore selezionato assente mostrato come chip acceso', chipsG.includes('Molise · 0'), chipsG.join('|'));
+}
+
+// I: nomi dei campi dalle classi CSS solo a parole intere
+{
+  const rowsI = ['A', 'B', 'C', 'D'].map((t, i) => `<div class="it"><span class="card__block">${t}${i}</span><span class="metadata">x${i % 2}</span><span class="itemPrice">€ ${i + 1}00</span></div>`).join('');
+  const wi = new JSDOM(`<!doctype html><body><main>${rowsI}</main></body>`, { runScripts: 'dangerously', url: 'https://cls.test/', pretendToBeVisual: true }).window;
+  wi.eval(src); const Li = wi.__listLens; Li.startFrom(wi.document.querySelector('.it span'));
+  const names = Li.S.fields.map(f => f.name);
+  check('classi: "block" e "metadata" non diventano Luogo e Data, "itemPrice" diventa Prezzo',
+    !names.includes('Luogo') && !names.includes('Data') && names.includes('Prezzo'), names.join(','));
+
+  // J: campo numerico senza numeri leggibili: niente ∞ nei suggerimenti
+  Li.confirm();
+  const pf = Li.S.fields.find(f => f.name === 'Prezzo');
+  Li.S.rows.forEach(r => { r.n[pf.key] = NaN; }); Li.S.open = true; Li.toggle(); Li.toggle();
+  const phs = [...wi.document.getElementById('listlens-host').shadowRoot.querySelectorAll('.mm input')].map(i => i.placeholder);
+  check('campo numerico vuoto: suggerimenti senza ∞', phs.length === 2 && phs.every(p => !p.includes('∞')), phs.join('|'));
+}
+
 console.log(fails ? `\n${fails} test falliti` : '\nTutti i test passati');
 process.exit(fails ? 1 : 0);
