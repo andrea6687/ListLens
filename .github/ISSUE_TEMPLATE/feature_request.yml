@@ -1,0 +1,24 @@
+name: Idea / Proposta
+description: Suggest an improvement. / Proponi un miglioramento.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would it solve? / Quale problema risolverebbe?
+      description: For example a site where a list can't be filtered the way you need. / Per esempio un sito dove una lista non si filtra come ti serve.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea / La tua idea
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: This is about viewing lists for myself, not scraping or collecting data. / Riguarda come vedo le liste io, non lo scraping o la raccolta di dati.
+          required: true

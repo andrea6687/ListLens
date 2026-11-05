@@ -1,87 +1,90 @@
 # ListLens
 
-Filtra e riordina le liste di qualsiasi sito, solo per te.
+🇮🇹 [Versione italiana](README.it.md)
 
-Molti siti mostrano un elenco (annunci, prodotti, offerte) senza filtri né ordinamento. Con ListLens tocchi un elemento della lista, lui riconosce la struttura, legge i campi (prezzo, anno, regione…) e ti dà subito filtri e ordinamento. Funziona sul sito reale, direttamente nella tua pagina, senza server e senza account. Le modifiche restano solo sul tuo dispositivo.
+**Filter and sort any list on any website, even when the site doesn't let you.**
 
-## Come funziona
+![A used-car listings page with the ListLens panel open: filters for region, price, mileage and photo, and the same site filtered on a phone](assets/hero.png)
 
-1. Avvia ListLens sulla pagina (bookmarklet o icona dell'estensione) e tocca **Scegli la lista**.
-2. Tocca un elemento qualsiasi della lista. ListLens evidenzia tutti gli elementi simili e ne estrae i campi.
-3. Conferma. Per ogni campo ottieni il controllo adatto:
-   - **valori ripetuti** (regione, carburante): chip da attivare, con il conteggio;
-   - **numeri** (prezzo, anno, km): intervallo da/a. Legge i formati italiani come `€ 12.500` e `85.000 km`;
-   - **testo libero**: ricerca;
-   - **foto**: chip per mostrare solo gli annunci con una foto vera oppure solo quelli con l'immagine generica di una categoria (per esempio "foto non disponibile"), ognuna con la sua miniatura. È facoltativo e si combina con gli altri filtri.
-   Un menu permette di ordinare per qualsiasi campo, crescente o decrescente.
+Many sites show a list (classified ads, products, deals) with no filters and no sorting. With ListLens you tap one item of the list: it recognizes the structure, reads the fields (price, year, region, photo…) and instantly gives you filters and sorting. It works on the real site, right inside your page, with no server and no account. Changes stay on your device only.
 
-I filtri e l'ordine vengono ricordati per pagina. Con l'estensione si riapplicano da soli al caricamento. Gli elementi che il sito aggiunge scorrendo vengono rilevati e filtrati.
+👉 **Install page with a demo list:** https://andrea6687.github.io/ListLens/
+Copy the bookmarklet with one tap and try it right away on the sample list.
 
-## Installazione
+> The interface is in Italian for now, and numbers are read in the Italian format (`€ 12.500`, `85.000 km`).
 
-Un solo codice (`src/listlens.js`) per tutte le piattaforme:
+## Quick install
 
-| Piattaforma | Come |
-|---|---|
-| Windows, Linux, macOS | Estensione per Chrome, Edge, Firefox (o bookmarklet) |
-| Android | Firefox con l'estensione (pubblicata su AMO); su Chrome la bookmarklet |
-| iPhone, iPadOS | Bookmarklet in Safari; estensione Safari tramite Xcode |
-| macOS Safari | Estensione Safari tramite Xcode |
+### Phone (iPhone, iPad, Android)
 
-Istruzioni passo per passo, permessi e limiti: [docs/INSTALL.md](docs/INSTALL.md).
+On a phone ListLens is a browser bookmark. Nothing to install.
 
-### Su telefono (iPhone, iPad, Android)
+1. **Copy the code.** On your phone open the [install page](https://andrea6687.github.io/ListLens/) and tap **Copia bookmarklet** (copy bookmarklet). Or open [`bookmarklet.txt`](bookmarklet.txt) and tap the **Copy raw file** button. The code is one long line starting with `javascript:`, and it must be copied in full.
+2. **Create the bookmark.** Bookmark any website, then edit that bookmark: name it `ListLens` and paste the code in place of the address.
+   - **iPhone and iPad (Safari):** Share → Add Bookmark; then the Bookmarks icon → Edit → tap the bookmark.
+   - **Android (Chrome or Firefox):** menu → add to bookmarks; then open your bookmarks and choose Edit on the new one.
+3. **Use it.** On the site with the list, open your bookmarks and tap **ListLens**. On Chrome for Android, type `ListLens` in the address bar instead and tap the suggestion with the star.
 
-Sul telefono ListLens si usa come segnalibro del browser. Non serve installare niente né compilare: il codice pronto è nel file [`bookmarklet.txt`](bookmarklet.txt).
+When ListLens is updated, copy the code again and replace the bookmark's address. Your saved filters and sorting are kept.
 
-1. **Copia il codice.** Dal telefono apri [`bookmarklet.txt`](bookmarklet.txt) su GitHub, entrando con un account che vede il repository, e tocca il pulsante **Copia** (Copy raw file) sopra il testo. Il codice è un'unica riga lunga che inizia con `javascript:`: va copiata per intero.
-2. **Crea il segnalibro.** Salva nei preferiti un sito qualsiasi, poi modifica quel preferito: titolo `ListLens`, e al posto dell'indirizzo incolla il codice.
-   - **iPhone e iPad (Safari):** Condividi → Aggiungi segnalibro; poi icona dei Preferiti → Modifica → tocca il segnalibro.
-   - **Android (Chrome o Firefox):** menu → aggiungi ai segnalibri; poi apri i segnalibri e scegli Modifica sul nuovo segnalibro.
-3. **Usalo.** Sul sito con la lista apri i Preferiti e tocca **ListLens** (su Chrome per Android scrivi invece `ListLens` nella barra dell'indirizzo e tocca il suggerimento con la stellina). Poi **Scegli la lista** → tocca un elemento → **Conferma**.
+### Computer (Chrome, Edge, Firefox, Safari)
 
-Filtri e ordine restano salvati per quella pagina: la volta dopo basta toccare di nuovo il segnalibro. Quando ListLens viene aggiornato, ripeti i passi 1 e 2 con il codice nuovo. Dettagli e soluzioni ai problemi: [docs/INSTALL.md](docs/INSTALL.md#bookmarklet).
+- **Bookmarklet:** copy the code from the [install page](https://andrea6687.github.io/ListLens/), add a bookmark called `ListLens` to your bookmarks bar and paste the code as its address.
+- **Chrome and Edge extension:** download or clone this repository, open `chrome://extensions` (or `edge://extensions`), turn on **Developer mode**, choose **Load unpacked** and select the `extension/` folder. With the extension, your filters and sorting are applied again automatically when you reopen a page.
+
+Firefox, Safari with Xcode, permissions and troubleshooting: [docs/INSTALL.md](docs/INSTALL.md) (in Italian).
+
+## How to use it
+
+1. Start ListLens on the page (bookmark or extension icon) and tap **Scegli la lista** (pick the list).
+2. Tap any item of the list. ListLens highlights all similar items and reads their fields.
+3. Tap **Conferma** (confirm). Every field gets the right control:
+   - **repeated values** (region, fuel): chips to toggle, with counts;
+   - **numbers** (price, year, mileage): a from/to range;
+   - **free text**: a search box;
+   - **photo**: chips to show only the ads with a real photo, or only those with a category's generic image (for example "no photo available"), each with its thumbnail.
+
+   A menu sorts by any field, ascending or descending.
+
+Filters and sorting are remembered per page. Items the site adds as you scroll, or swaps in when you change page, are detected and filtered too.
+
+## Privacy
+
+ListLens makes no network requests and has no server. Filters and sorting are saved in the browser's local storage, on your device. The site isn't changed for anyone else: only what you see changes.
+
+## Known limitations
+
+- If a site redraws the list by itself (React apps and similar) keeping the same items, it can undo the sorting. New or replaced items are detected.
+- It works with lists inside a single container. Pages with several separate sections must be picked one at a time.
+- Some sites with very strict protections can block bookmarklets: use the extension there.
+- Dates don't have a dedicated control yet: they are filtered as text.
+- The photo filter reads real images (`<img>`), not CSS background images. An image counts as generic when the exact same one appears in at least two items, or when its file name says so (`placeholder`, `no-image`…). Generic images already recognized are remembered.
+
+## Development
 
 ```
 npm install
-npm run build     # crea dist/: estensione (zip e xpi), bookmarklet e pagina di installazione
+npm test          # automated tests in jsdom
+npm run build     # updates extension/, bookmarklet.txt, index.html and creates dist/
 ```
 
-## Struttura
-
 ```
-src/listlens.js          il codice: rilevamento lista, campi, filtri, ordinamento, interfaccia
-extension/               estensione Manifest V3 (popup di avvio, content script automatico, icone)
-demo/demo.html           pagina di prova con annunci di auto
-docs/                    istruzioni di installazione e modello della pagina di installazione
-scripts/build.mjs        genera dist/ e aggiorna bookmarklet.txt
-bookmarklet.txt          il codice del segnalibro, pronto da copiare (generato dalla build)
-test/test.mjs            test automatici in jsdom
-```
-
-## Test
-
-```
-npm test
+src/listlens.js          the code: list detection, fields, filters, sorting, interface
+extension/               Manifest V3 extension (launch popup, automatic content script, icons)
+bookmarklet.txt          the bookmarklet code, ready to copy (generated by the build)
+index.html               install page published on GitHub Pages (generated by the build)
+demo/demo.html           demo page with used-car listings
+docs/                    install guide and the install page template
+scripts/build.mjs        build
+test/test.mjs            automated tests
 ```
 
-Coprono rilevamento della lista, tipi di campo, formati numerici, filtri, ordinamento, nuovi elementi caricati dopo, salvataggio e la modalità automatica dell'estensione. Girano in jsdom, non in un browser reale: il primo caricamento su un browser vero resta da verificare a mano.
+Tests run in jsdom, not in a real browser: after big changes a manual check is worth it. To contribute, read [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Limiti noti
+## License
 
-- Se un sito ridisegna la lista da solo (app React e simili) mantenendo gli stessi elementi, può annullare l'ordinamento. Gli elementi nuovi o sostituiti (scorrendo, cambiando pagina, con una nuova ricerca) vengono invece rilevati e filtrati.
-- Funziona con liste dentro un unico contenitore. Pagine con più sezioni separate vanno scelte una alla volta.
-- Alcuni siti con protezioni molto rigide possono bloccare l'avvio da bookmarklet.
-- Le date non hanno ancora un controllo dedicato: si filtrano come testo.
-- Il filtro foto legge solo le immagini vere e proprie (`<img>`), non quelle messe come sfondo con il CSS. Un'immagine è considerata generica quando compare identica in almeno due annunci, oppure quando il nome del file lo dice (`placeholder`, `no-image`, `nofoto`…). Le immagini generiche già riconosciute vengono ricordate, anche sulle pagine dove ne compare una sola.
+[MIT](LICENSE) © Andrea Sportello
 
-## Idee per dopo
+---
 
-- Controllo per le date e per i valori con unità diverse.
-- Più liste nella stessa pagina e scelta del campo da mostrare nell'elenco.
-- Userscript per Tampermonkey e per l'app Userscripts su Safari, senza passare da Xcode.
-- Esportare la vista filtrata.
-
-## Licenza
-
-[MIT](LICENSE)
+If ListLens saved you some scrolling, a ⭐ on the repository helps other people find it. Bugs and ideas are welcome in the [issues](https://github.com/andrea6687/ListLens/issues).

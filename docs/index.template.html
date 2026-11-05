@@ -44,6 +44,9 @@ button { font: inherit; cursor: pointer; }
 .tab { background: none; border: 0; border-bottom: 3px solid transparent; padding: 10px 14px; color: var(--muted); font-weight: 500; min-height: 44px; margin-bottom: -1px; }
 .tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); font-weight: 700; }
 .panel { display: flex; flex-direction: column; gap: 14px; }
+.panel[hidden] { display: none; }
+.foot { color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--line); padding-top: 18px; }
+.foot a { color: var(--accent); }
 ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: flex; flex-direction: column; gap: 12px; }
 ol.steps li { counter-increment: s; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; align-items: start; }
 ol.steps li::before { content: counter(s); font-family: var(--font-mono); font-weight: 500; font-size: 0.85rem; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--code-bg); color: var(--fg); }
@@ -144,11 +147,15 @@ code { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-
     <h2 id="lim">Limiti di questa versione</h2>
     <ul class="limits">
       <li><b>Si riapplica a mano.</b> Filtri e ordine vengono ricordati per pagina, ma li ritrovi toccando di nuovo il segnalibro.</li>
-      <li><b>Siti che ridisegnano la lista.</b> Se il sito ricostruisce l'elenco da solo, può annullare l'ordinamento. I nuovi elementi caricati scorrendo vengono invece rilevati.</li>
+      <li><b>Siti che ridisegnano la lista.</b> Se il sito ricostruisce l'elenco da solo, può annullare l'ordinamento. Gli elementi nuovi o sostituiti (scorrendo o cambiando pagina) vengono invece rilevati e filtrati.</li>
       <li><b>Siti molto protetti.</b> Alcuni blocchi di sicurezza possono impedire l'avvio da segnalibro.</li>
       <li><b>Solo liste dentro un unico contenitore.</b> Le pagine a più sezioni separate vanno scelte una alla volta.</li>
     </ul>
   </section>
+
+  <footer class="foot">
+    <p>Codice, istruzioni e segnalazioni su <a href="https://github.com/andrea6687/ListLens">GitHub</a>. Licenza MIT © Andrea Sportello. ListLens non fa richieste di rete: filtri e ordine restano sul tuo dispositivo.</p>
+  </footer>
 </main>
 
 <script type="text/plain" id="ll-src">__SRC__</script>

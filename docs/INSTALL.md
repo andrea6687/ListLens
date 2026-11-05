@@ -18,9 +18,9 @@ ListLens si usa in due modi. Scegli quello che ti serve, i passi sono qui sotto.
 
 ## Prima di iniziare
 
-**Solo segnalibro, per esempio dal telefono:** non serve compilare niente. Il codice pronto è il file `bookmarklet.txt` nella radice del repository, sempre allineato all'ultima versione. Passa direttamente a [Portare il codice sul telefono](#portare-il-codice-sul-telefono).
+**Solo segnalibro, per esempio dal telefono:** non serve compilare niente. Il codice pronto è sulla [pagina di installazione](https://andrea6687.github.io/ListLens/) e nel file `bookmarklet.txt` nella radice del repository, sempre allineati all'ultima versione. Passa direttamente a [Portare il codice sul telefono](#portare-il-codice-sul-telefono).
 
-**Estensione o pagina di installazione:** i file si generano dal repository. Serve Node.js.
+**Estensione:** usa la cartella `extension/` del repository così com'è (vedi [Chrome ed Edge](#chrome-ed-edge-windows-linux-macos)). Gli archivi `.zip` e `.xpi` si generano dal repository; serve Node.js.
 
 ```
 npm install
@@ -40,9 +40,9 @@ Nella cartella `dist/` trovi:
 
 Il codice è un'unica riga molto lunga che inizia con `javascript:`. Va copiato per intero: se ne manca anche un pezzo, il segnalibro non parte. Hai tre modi, dal più semplice:
 
-1. **Da GitHub.** Sul telefono apri il file `bookmarklet.txt` del repository su github.com (o nell'app GitHub), con un account che può vedere il repository. Tocca il pulsante **Copia** (Copy raw file), l'icona con due quadratini sopra il testo. Se non lo vedi, tocca **Raw**, poi tieni premuto sul testo, scegli **Seleziona tutto** e **Copia**.
-2. **Mandandolo a te stesso.** Dal computer invia `bookmarklet.txt` per email, messaggio o AirDrop. Sul telefono aprilo, tieni premuto sul testo, **Seleziona tutto**, **Copia**.
-3. **Dalla pagina di installazione.** Se pubblichi `dist/index.html` (o lo apri sul telefono), tocca "Copia bookmarklet".
+1. **Dalla pagina di installazione.** Sul telefono apri https://andrea6687.github.io/ListLens/ e tocca **Copia bookmarklet**. Nella stessa pagina c'è una lista di prova per controllare che funzioni.
+2. **Da GitHub.** Apri il file `bookmarklet.txt` del repository su github.com (o nell'app GitHub) e tocca il pulsante **Copia** (Copy raw file), l'icona con due quadratini sopra il testo. Se non lo vedi, tocca **Raw**, poi tieni premuto sul testo, scegli **Seleziona tutto** e **Copia**.
+3. **Mandandolo a te stesso.** Dal computer invia `bookmarklet.txt` per email, messaggio o AirDrop. Sul telefono aprilo, tieni premuto sul testo, **Seleziona tutto**, **Copia**.
 
 Poi segui i passi per il tuo telefono qui sotto. Quando ListLens viene aggiornato, ricopia il codice e sostituisci l'indirizzo del segnalibro: filtri e ordine salvati non si perdono.
 
@@ -129,7 +129,7 @@ Con un Apple ID gratuito puoi installarla sui tuoi dispositivi da Xcode, ma il p
 
 ## Controllare che funzioni
 
-1. Apri `dist/index.html` oppure la pagina `demo/demo.html`: è una lista di annunci di auto senza filtri.
+1. Apri la [pagina di installazione](https://andrea6687.github.io/ListLens/) (sezione "Provala qui") oppure `demo/demo.html`: è una lista di annunci di auto senza filtri.
 2. Avvia ListLens (segnalibro o icona). In basso compare il pannello **⚡ ListLens** con il pulsante **Scegli la lista**.
 3. Toccalo, poi tocca un'auto qualsiasi. ListLens evidenzia gli annunci simili e indica quanti elementi e campi ha trovato.
 4. Conferma. Dovresti vedere i filtri per regione, prezzo, anno e km, e un menu per ordinare.
@@ -160,4 +160,4 @@ Con un Apple ID gratuito puoi installarla sui tuoi dispositivi da Xcode, ma il p
 
 ## Per chi sviluppa
 
-Il sorgente è `src/listlens.js`. Dopo ogni modifica esegui `npm run build`: copia il file in `extension/` e rigenera gli archivi in `dist/`. `npm test` controlla il comportamento in jsdom e verifica anche che le due copie siano allineate.
+Il sorgente è `src/listlens.js`. Dopo ogni modifica esegui `npm run build`: copia il file in `extension/`, aggiorna `bookmarklet.txt` e la pagina `index.html` nella radice (quella pubblicata su GitHub Pages) e rigenera gli archivi in `dist/`. `npm test` controlla il comportamento in jsdom e verifica anche che tutte le copie siano allineate. Il modello della pagina è `docs/index.template.html`.

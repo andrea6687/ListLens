@@ -5,6 +5,14 @@
   "description": "Filtra e riordina le liste di qualsiasi sito, solo per te",
   "author": "Andrea Sportello",
   "license": "MIT",
+  "homepage": "https://andrea6687.github.io/ListLens/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andrea6687/ListLens.git"
+  },
+  "bugs": {
+    "url": "https://github.com/andrea6687/ListLens/issues"
+  },
   "type": "module",
   "scripts": {
     "test": "node test/test.mjs",

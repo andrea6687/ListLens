@@ -1,0 +1,42 @@
+name: Bug report / Segnala un problema
+description: Something doesn't work as expected. / Qualcosa non funziona come previsto.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Please remove anything private from addresses and screenshots before posting.
+        Grazie per la segnalazione! Togli eventuali dati privati da indirizzi e screenshot prima di pubblicare.
+  - type: input
+    id: page
+    attributes:
+      label: Page / Pagina
+      description: The address of the page with the list, if it's public. / L'indirizzo della pagina con la lista, se è pubblica.
+      placeholder: "https://..."
+  - type: dropdown
+    id: mode
+    attributes:
+      label: How you started ListLens / Come hai avviato ListLens
+      options:
+        - Bookmarklet
+        - Extension / Estensione
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and browser / Dispositivo e browser
+      placeholder: "e.g. iPhone 15, Safari; Windows 11, Chrome 131"
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What you tapped, what happened, and what you expected / Cosa hai toccato, cosa è successo e cosa ti aspettavi
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot (optional) / Screenshot (facoltativo)
+      description: Drag an image here. / Trascina qui un'immagine.
