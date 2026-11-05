@@ -122,9 +122,13 @@ function queryItems() {
 }
 
 /* ---------- campi ---------- */
-const HINTS = [[/pric|prezz|cost/i, 'Prezzo'], [/year|anno|immatr/i, 'Anno'], [/\bkm|mileage|chilom/i, 'Km'],
-  [/region/i, 'Regione'], [/city|citt|comune/i, 'Città'], [/loc|luogo|place/i, 'Luogo'],
-  [/title|titol|name|nome|model/i, 'Titolo'], [/date|data/i, 'Data'], [/fuel|carbur|alimentaz/i, 'Carburante']];
+/* I suggerimenti si confrontano con l'inizio di ogni parola delle classi CSS (prezzo-auto, itemPrice, card__price):
+   così "block" non diventa "Luogo" e "metadata" non diventa "Data". */
+const HINTS = [[/^(pric|prezz|cost)/, 'Prezzo'], [/^(year|anno|immatr)/, 'Anno'], [/^(km|mileage|chilom)/, 'Km'],
+  [/^region/, 'Regione'], [/^(city|citt|comune)/, 'Città'], [/^(loc|luogo|place)/, 'Luogo'],
+  [/^(title|titol|name|nome|model)/, 'Titolo'], [/^(date|data$)/, 'Data'], [/^(fuel|carbur|alimentaz)/, 'Carburante']];
+const words = cls => cls.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+const hintName = cls => { const ws = words(cls); const hm = HINTS.find(([re]) => ws.some(w => re.test(w))); return hm ? hm[1] : null; };
 function prep(f) { f.re = f.prefix ? new RegExp('^\\s*' + esc(f.prefix) + '\\s*:\\s*', 'i') : null; return f; }
 function extract(el, f) {
   let n = el;
@@ -137,6 +141,13 @@ function extract(el, f) {
 /* Campo immagine: un'immagine che si ripete identica in più elementi è un segnaposto
    (es. "foto non disponibile" della categoria); una che compare una volta sola è una foto vera. */
 const PHOTO = '\u0001foto', NONE = '\u0001nessuna';
+/* nomi di file tipici dei segnaposto: riconosciuti anche se compaiono in un solo annuncio */
+const PH_NAME = /(placeholder|no[-_ ]?(image|img|photo|foto|pic)|nofoto|senza[-_ ]?foto|foto[-_ ]?non|missing|default[-_ ]?(image|img|photo)?|dummy|blank)/i;
+function fileName(s) {
+  let f = s.split(/[?#]/)[0].split('/').pop() || '';
+  try { f = decodeURIComponent(f); } catch (e) { /* indirizzo con % non valido: si usa così com'è */ }
+  return f.replace(/\.\w+$/, '').replace(/[-_]+/g, ' ').trim();
+}
 function imgEl(el, f) {
   let n = el;
   for (const i of f.path) n = n && n.children[i];
@@ -146,16 +157,24 @@ function classifyImgs(f, list) {
   /* list: [{ src, alt }] uno per elemento; restituisce il gruppo di ciascuno e i nomi dei segnaposto */
   const cnt = {}, alts = {};
   list.forEach(({ src, alt }) => { if (src) { cnt[src] = (cnt[src] || 0) + 1; (alts[src] = alts[src] || []).push(alt); } });
-  const labels = {};
-  let k = 1;
-  Object.keys(cnt).filter(s => cnt[s] > 1).forEach(s => {
-    const a = alts[s].find(Boolean);
-    const file = decodeURIComponent((s.split(/[?#]/)[0].split('/').pop() || '')).replace(/\.\w+$/, '').replace(/[-_]+/g, ' ').trim();
-    labels[s] = a || (/^data:/.test(s) || !file ? 'Immagine generica ' + k : file);
-    k++;
+  /* un segnaposto resta tale anche quando in questa pagina compare una volta sola:
+     f.ph conserva quelli già riconosciuti (anche dalla configurazione salvata) */
+  const ph = new Set(f.ph || []);
+  Object.keys(cnt).forEach(s => { if (cnt[s] > 1 || (!/^data:/.test(s) && PH_NAME.test(fileName(s)))) ph.add(s); });
+  const labels = Object.assign({}, f.labels);
+  let k = Object.keys(labels).length + 1;
+  ph.forEach(s => {
+    if (labels[s] || !cnt[s]) return;
+    /* il testo alternativo vale come nome solo se è lo stesso in tutti gli annunci con questa immagine:
+       molti siti ci mettono il titolo dell'annuncio */
+    const as = new Set(alts[s]);
+    const a = as.size === 1 ? [...as][0] : '';
+    const file = /^data:/.test(s) ? '' : fileName(s);
+    labels[s] = a || file || 'Immagine generica ' + k++;
   });
+  f.ph = [...ph];
   f.labels = labels;
-  return list.map(({ src }) => !src ? NONE : cnt[src] > 1 ? src : PHOTO);
+  return list.map(({ src }) => !src ? NONE : ph.has(src) ? src : PHOTO);
 }
 function buildImgField(els) {
   const agg = new Map(), n = els.length;
@@ -167,7 +186,7 @@ function buildImgField(els) {
   /* l'immagine principale è di solito la prima presente in quasi tutti gli elementi */
   for (const a of agg.values()) {
     if (a.seen < n * 0.5) continue;
-    const f = { key: a.key, path: a.path, name: 'Foto', type: 'img', prefix: null };
+    const f = { key: a.key, path: a.path, name: 'Foto', type: 'img', prefix: null, ph: [], labels: {} };
     const groups = classifyImgs(f, els.map(el => { const i = imgEl(el, f); return i ? { src: imgSrc(i), alt: (i.getAttribute('alt') || '').trim() } : { src: '', alt: '' }; }));
     if (groups.includes(PHOTO) && Object.keys(f.labels).length) return f;
   }
@@ -200,7 +219,7 @@ function buildFields(els) {
     if (a.vals.filter(isNumeric).length >= a.vals.length * 0.8) type = 'num';
     else if (distinct <= 40 && distinct <= Math.max(2, n * 0.7)) type = 'cat';
     let name = prefix;
-    if (!name) { const hm = HINTS.find(([re]) => re.test(a.hint)); if (hm) name = hm[1]; }
+    if (!name) name = hintName(a.hint);
     if (!name && /^H[1-3]$/.test(a.tag)) name = 'Titolo';
     if (!name) {
       if (a.vals.filter(v => /[€$£]/.test(v)).length >= a.vals.length * 0.5) name = 'Prezzo';
@@ -256,18 +275,29 @@ function rebuild() {
   watch();
   S.busy = false;
 }
+/* La lista va ricostruita quando cambiano gli elementi, non solo il loro numero:
+   pagina 2 con altrettanti annunci, nuova ricerca, app che ridisegnano tutto il contenitore. */
+function listChanged() {
+  const cur = queryItems();
+  if (cur.length !== S.rows.length) return true;
+  const known = new Set(S.rows.map(r => r.el));
+  return cur.some(e => !known.has(e));
+}
 function watch() {
   if (S.obs) S.obs.disconnect();
-  if (!S.parent) return;
-  let t;
+  if (!document.body) return;
+  let t = null;
+  /* si osserva tutta la pagina (il sito può sostituire anche il contenitore), con un controllo ogni 250 ms al massimo:
+     un timer che si azzerasse a ogni modifica non scatterebbe mai sui siti con caroselli o contatori sempre in movimento */
   S.obs = new MutationObserver(() => {
-    if (S.busy) return;
-    clearTimeout(t);
+    if (S.busy || t) return;
     t = setTimeout(() => {
-      if (queryItems().length !== S.rows.length) { rebuild(); apply(); if (S.open && S.mode === 'tools') render(); }
+      t = null;
+      if (S.mode !== 'tools' || !listChanged()) return;
+      rebuild(); apply(); if (S.open) render();
     }, 250);
   });
-  S.obs.observe(S.parent, { childList: true });
+  S.obs.observe(document.body, { childList: true, subtree: true });
 }
 function apply() {
   if (!S.rows.length) return;
@@ -317,7 +347,8 @@ function save() {
   if (!S.itemSel || S.mode !== 'tools') return;
   store.save({
     itemSel: S.itemSel,
-    fields: S.fields.map(({ key, path, name, type, prefix }) => ({ key, path, name, type, prefix })),
+    fields: S.fields.map(({ key, path, name, type, prefix, ph, labels }) =>
+      type === 'img' ? { key, path, name, type, prefix, ph, labels } : { key, path, name, type, prefix }),
     sort: S.sort,
     filters: Object.fromEntries(Object.entries(S.filters).map(([k, s]) => [k, { sel: s.sel ? [...s.sel] : undefined, min: s.min, max: s.max, q: s.q }]))
   });
@@ -405,6 +436,9 @@ const fab = () => h('button', { class: 'fab', 'aria-label': 'ListLens', onclick:
 const banner = (text, ...btns) => h('div', { class: 'banner' }, h('span', {}, text), h('div', { class: 'bb' }, ...btns));
 function updateCount() { if (S.countEl) S.countEl.textContent = S.shown + ' / ' + S.rows.length; }
 
+/* Un valore scelto che in questa pagina non c'è (salvato altrove, o sparito dopo un aggiornamento) resta come chip
+   acceso con conteggio 0: altrimenti nasconderebbe tutta la lista senza che si veda il motivo. */
+function keepSelected(st, cnt) { if (st.sel) st.sel.forEach(v => { if (!(v in cnt)) cnt[v] = 0; }); }
 function toolsBody() {
   const b = h('div', { class: 'body' });
   const dirBtn = h('button', { class: 'dir', onclick: e => { if (!S.sort) return; S.sort.dir *= -1; e.currentTarget.textContent = S.sort.dir > 0 ? '▲' : '▼'; apply(); } }, S.sort && S.sort.dir < 0 ? '▼' : '▲');
@@ -419,6 +453,7 @@ function toolsBody() {
     if (f.type === 'img') {
       const cnt = {};
       S.rows.forEach(r => { const v = r.v[f.key]; cnt[v] = (cnt[v] || 0) + 1; });
+      keepSelected(st, cnt);
       const label = v => v === PHOTO ? 'Foto vera' : v === NONE ? 'Senza immagine' : (f.labels && f.labels[v]) || 'Immagine generica';
       const chips = h('div', { class: 'chips' });
       /* prima le foto vere, poi i segnaposto più frequenti, in fondo gli elementi senza immagine */
@@ -435,6 +470,7 @@ function toolsBody() {
     } else if (f.type === 'cat') {
       const cnt = {};
       S.rows.forEach(r => { const v = r.v[f.key]; if (v) cnt[v] = (cnt[v] || 0) + 1; });
+      keepSelected(st, cnt);
       const chips = h('div', { class: 'chips' });
       Object.entries(cnt).sort((a, c) => c[1] - a[1] || a[0].localeCompare(c[0], 'it')).forEach(([v, n]) =>
         chips.append(h('button', { class: 'chip' + (st.sel && st.sel.has(v) ? ' on' : ''), onclick: e => {
@@ -448,7 +484,8 @@ function toolsBody() {
       const lo = Math.min(...vals), hi = Math.max(...vals);
       const inp = (key, ph) => h('input', { type: 'number', inputmode: 'decimal', placeholder: ph, value: st[key] != null ? st[key] : '',
         oninput: e => { st[key] = e.target.value === '' ? null : parseFloat(e.target.value); apply(); } });
-      card.append(h('div', { class: 'mm' }, inp('min', 'da ' + lo.toLocaleString('it-IT')), inp('max', 'a ' + hi.toLocaleString('it-IT'))));
+      const fmt = x => vals.length ? ' ' + x.toLocaleString('it-IT') : '';
+      card.append(h('div', { class: 'mm' }, inp('min', 'da' + fmt(lo)), inp('max', 'a' + fmt(hi))));
     } else {
       card.append(h('input', { class: 'q', type: 'search', placeholder: 'Cerca in ' + f.name.toLowerCase(), value: st.q || '',
         oninput: e => { st.q = e.target.value; apply(); } }));
