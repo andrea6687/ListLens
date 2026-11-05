@@ -18,7 +18,9 @@ ListLens si usa in due modi. Scegli quello che ti serve, i passi sono qui sotto.
 
 ## Prima di iniziare
 
-I file di installazione si generano dal repository. Serve Node.js.
+**Solo segnalibro, per esempio dal telefono:** non serve compilare niente. Il codice pronto è il file `bookmarklet.txt` nella radice del repository, sempre allineato all'ultima versione. Passa direttamente a [Portare il codice sul telefono](#portare-il-codice-sul-telefono).
+
+**Estensione o pagina di installazione:** i file si generano dal repository. Serve Node.js.
 
 ```
 npm install
@@ -34,7 +36,15 @@ Nella cartella `dist/` trovi:
 | `listlens-extension.zip` | L'estensione per Chrome, Edge e altri browser basati su Chromium |
 | `listlens-firefox.xpi` | La stessa estensione per Firefox |
 
-Per usare la bookmarklet su un telefono devi portarci il codice. Il modo più semplice è aprire su quel telefono la pagina di installazione e toccare "Copia bookmarklet". In alternativa invia `bookmarklet.txt` a te stesso (email, messaggi, AirDrop), aprilo, seleziona tutto il testo e copialo.
+### Portare il codice sul telefono
+
+Il codice è un'unica riga molto lunga che inizia con `javascript:`. Va copiato per intero: se ne manca anche un pezzo, il segnalibro non parte. Hai tre modi, dal più semplice:
+
+1. **Da GitHub.** Sul telefono apri il file `bookmarklet.txt` del repository su github.com (o nell'app GitHub), con un account che può vedere il repository. Tocca il pulsante **Copia** (Copy raw file), l'icona con due quadratini sopra il testo. Se non lo vedi, tocca **Raw**, poi tieni premuto sul testo, scegli **Seleziona tutto** e **Copia**.
+2. **Mandandolo a te stesso.** Dal computer invia `bookmarklet.txt` per email, messaggio o AirDrop. Sul telefono aprilo, tieni premuto sul testo, **Seleziona tutto**, **Copia**.
+3. **Dalla pagina di installazione.** Se pubblichi `dist/index.html` (o lo apri sul telefono), tocca "Copia bookmarklet".
+
+Poi segui i passi per il tuo telefono qui sotto. Quando ListLens viene aggiornato, ricopia il codice e sostituisci l'indirizzo del segnalibro: filtri e ordine salvati non si perdono.
 
 ---
 
@@ -49,6 +59,8 @@ Il procedimento è lo stesso ovunque: crei un segnalibro qualsiasi, poi ne sosti
 3. Cambia il titolo in `ListLens`. Nel campo dell'indirizzo cancella tutto e incolla il codice. Tocca **Fine**.
 
 Per usarlo: apri il sito con la lista, tocca l'icona dei Preferiti e poi **ListLens**.
+
+In alternativa, sul sito con la lista scrivi `ListLens` nella barra dell'indirizzo e tocca il segnalibro tra i suggerimenti. Con la bookmarklet i filtri non si riapplicano da soli quando riapri il sito: tocca di nuovo **ListLens** e tornano subito.
 
 ### Android con Firefox
 
@@ -134,6 +146,7 @@ Con un Apple ID gratuito puoi installarla sui tuoi dispositivi da Xcode, ma il p
 | Problema | Cosa fare |
 |---|---|
 | Il segnalibro non fa nulla | Controlla che l'indirizzo cominci con `javascript:` e che il codice sia stato incollato per intero. Su Chrome per Android avvialo dalla barra dell'indirizzo. Alcuni siti molto protetti bloccano le bookmarklet: prova con l'estensione. |
+| Su iPhone il segnalibro apre una ricerca o una pagina vuota | Nel campo dell'indirizzo c'era ancora l'indirizzo vecchio, oppure il codice non è stato incollato tutto. Modifica il segnalibro, cancella tutto il campo e incolla di nuovo. |
 | "Non vedo una lista qui" | Tocca un elemento della lista, non lo sfondo o il titolo della pagina. |
 | ListLens evidenzia gli elementi sbagliati | Tocca **Riprova** e scegli un altro punto dentro un elemento della lista. |
 | L'estensione dice che non può partire | Le pagine interne del browser e gli store delle estensioni non permettono l'esecuzione. Apri un sito normale. |

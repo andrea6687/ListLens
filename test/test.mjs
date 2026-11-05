@@ -1,5 +1,6 @@
 import { JSDOM } from 'jsdom';
 import fs from 'fs';
+import { minify } from 'terser';
 
 const root = new URL('..', import.meta.url).pathname;
 const html = fs.readFileSync(root + 'demo/demo.html', 'utf8');
@@ -12,6 +13,10 @@ const check = (name, cond, extra = '') => { console.log((cond ? 'OK   ' : 'FAIL 
 
 check('extension/listlens.js allineato a src/listlens.js (esegui npm run build se fallisce)',
   fs.readFileSync(root + 'extension/listlens.js', 'utf8') === src);
+
+const fresh = 'javascript:' + encodeURIComponent((await minify(src, { compress: true, mangle: true })).code);
+check('bookmarklet.txt aggiornato (esegui npm run build se fallisce)',
+  fs.existsSync(root + 'bookmarklet.txt') && fs.readFileSync(root + 'bookmarklet.txt', 'utf8') === fresh);
 
 w.eval(src);
 const L = w.__listLens;

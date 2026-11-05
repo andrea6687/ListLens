@@ -7,7 +7,8 @@ import { minify } from 'terser';
    - listlens-firefox.xpi     Firefox (stesso contenuto)
    - bookmarklet.txt          codice da incollare in un segnalibro
    - index.html               pagina di installazione con la bookmarklet e una lista di prova
-   Allinea inoltre extension/listlens.js a src/listlens.js. */
+   Allinea inoltre extension/listlens.js a src/listlens.js e aggiorna bookmarklet.txt nella radice
+   del repository, da cui si copia il codice dal telefono senza dover eseguire la build. */
 
 const root = new URL('..', import.meta.url).pathname;
 const read = p => fs.readFileSync(root + p, 'utf8');
@@ -25,6 +26,7 @@ const min = (await minify(src, { compress: true, mangle: true })).code;
 if (/<\/script/i.test(min)) throw new Error('Il codice minificato contiene </script');
 const bookmarklet = 'javascript:' + encodeURIComponent(min);
 fs.writeFileSync(root + 'dist/bookmarklet.txt', bookmarklet);
+fs.writeFileSync(root + 'bookmarklet.txt', bookmarklet);
 
 const escHtml = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const page = read('docs/index.template.html')

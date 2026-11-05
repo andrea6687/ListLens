@@ -30,6 +30,18 @@ Un solo codice (`src/listlens.js`) per tutte le piattaforme:
 
 Istruzioni passo per passo, permessi e limiti: [docs/INSTALL.md](docs/INSTALL.md).
 
+### Su telefono (iPhone, iPad, Android)
+
+Sul telefono ListLens si usa come segnalibro del browser. Non serve installare niente né compilare: il codice pronto è nel file [`bookmarklet.txt`](bookmarklet.txt).
+
+1. **Copia il codice.** Dal telefono apri [`bookmarklet.txt`](bookmarklet.txt) su GitHub, entrando con un account che vede il repository, e tocca il pulsante **Copia** (Copy raw file) sopra il testo. Il codice è un'unica riga lunga che inizia con `javascript:`: va copiata per intero.
+2. **Crea il segnalibro.** Salva nei preferiti un sito qualsiasi, poi modifica quel preferito: titolo `ListLens`, e al posto dell'indirizzo incolla il codice.
+   - **iPhone e iPad (Safari):** Condividi → Aggiungi segnalibro; poi icona dei Preferiti → Modifica → tocca il segnalibro.
+   - **Android (Chrome o Firefox):** menu → aggiungi ai segnalibri; poi apri i segnalibri e scegli Modifica sul nuovo segnalibro.
+3. **Usalo.** Sul sito con la lista apri i Preferiti e tocca **ListLens** (su Chrome per Android scrivi invece `ListLens` nella barra dell'indirizzo e tocca il suggerimento con la stellina). Poi **Scegli la lista** → tocca un elemento → **Conferma**.
+
+Filtri e ordine restano salvati per quella pagina: la volta dopo basta toccare di nuovo il segnalibro. Quando ListLens viene aggiornato, ripeti i passi 1 e 2 con il codice nuovo. Dettagli e soluzioni ai problemi: [docs/INSTALL.md](docs/INSTALL.md#bookmarklet).
+
 ```
 npm install
 npm run build     # crea dist/: estensione (zip e xpi), bookmarklet e pagina di installazione
@@ -42,7 +54,8 @@ src/listlens.js          il codice: rilevamento lista, campi, filtri, ordinament
 extension/               estensione Manifest V3 (popup di avvio, content script automatico, icone)
 demo/demo.html           pagina di prova con annunci di auto
 docs/                    istruzioni di installazione e modello della pagina di installazione
-scripts/build.mjs        genera dist/
+scripts/build.mjs        genera dist/ e aggiorna bookmarklet.txt
+bookmarklet.txt          il codice del segnalibro, pronto da copiare (generato dalla build)
 test/test.mjs            test automatici in jsdom
 ```
 
