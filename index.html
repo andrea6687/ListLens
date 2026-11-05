@@ -11,110 +11,178 @@
 <meta name="twitter:card" content="summary_large_image">
 <title>ListLens</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Schibsted+Grotesk:wght@400;500;700;800&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Schibsted+Grotesk:wght@400;500;700;800;900&display=swap">
 <style>
-/* Layout: colonna singola da 640px, installazione per piattaforma a schede, poi area di prova con una lista reale */
+/* Una sola cosa forte: la demo in alto, con ListLens vera dentro un sito di prova chiassoso.
+   Intorno tutto è calmo: carta grigio-salvia, inchiostro scuro, il blu dei filtri come unico accento. */
 :root {
-  --bg: #f2f5f7;
+  --paper: #eef1ec;
   --surface: #ffffff;
-  --fg: #13202a;
-  --muted: #566570;
-  --line: #d5dde3;
-  --accent: #0a6f8f;
-  --accent-fg: #ffffff;
-  --code-bg: #e8eef2;
-  --ok: #0d7a4f;
+  --ink: #15222a;
+  --muted: #586870;
+  --line: #d4dad2;
+  --accent: #2457e6;
+  --accent-ink: #ffffff;
+  --code-bg: #e3e8e1;
+  --ok: #17784f;
+  --shadow: 0 1px 0 rgba(21, 34, 42, .04), 0 28px 60px -24px rgba(21, 34, 42, .35);
   --font-ui: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0e1519; --surface: #151f25; --fg: #e6edf1; --muted: #93a4af; --line: #2a3942;
-    --accent: #4cc0e0; --accent-fg: #04141a; --code-bg: #0a1013; --ok: #52d19a;
-    color-scheme: dark;
+    --paper: #0f1619; --surface: #172126; --ink: #e5ece9; --muted: #95a6a6; --line: #2a3a3f;
+    --accent: #6d93ff; --accent-ink: #08132e; --code-bg: #0b1114; --ok: #52d19a;
+    --shadow: 0 28px 60px -24px rgba(0, 0, 0, .7); color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0e1519; --surface: #151f25; --fg: #e6edf1; --muted: #93a4af; --line: #2a3942;
-  --accent: #4cc0e0; --accent-fg: #04141a; --code-bg: #0a1013; --ok: #52d19a;
-  color-scheme: dark;
+  --paper: #0f1619; --surface: #172126; --ink: #e5ece9; --muted: #95a6a6; --line: #2a3a3f;
+  --accent: #6d93ff; --accent-ink: #08132e; --code-bg: #0b1114; --ok: #52d19a;
+  --shadow: 0 28px 60px -24px rgba(0, 0, 0, .7); color-scheme: dark;
 }
 * { box-sizing: border-box; }
-body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 16px; line-height: 1.5; padding-inline: 16px; padding-block: 28px 56px; }
-main { max-width: 640px; margin-inline: auto; display: flex; flex-direction: column; gap: 36px; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.55 var(--font-ui); padding-inline: max(16px, env(safe-area-inset-left, 0px)); }
 h1, h2, h3, p { margin: 0; }
-h1 { font-size: clamp(2.2rem, 9vw, 3.2rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; text-wrap: balance; }
-h2 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
-.lead { color: var(--muted); font-size: 1.1rem; max-width: 52ch; margin-top: 12px; }
-section { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
-.eyebrow { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-button { font: inherit; cursor: pointer; }
+a { color: var(--accent); }
+button { font: inherit; cursor: pointer; color: inherit; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
+.top { max-width: 1120px; margin: 0 auto; padding-block: 22px 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.mark { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.05rem; letter-spacing: -0.01em; }
+.mark svg { width: 26px; height: 26px; }
+.top a { font-weight: 500; text-decoration: none; color: var(--muted); }
+.top a:hover { color: var(--ink); }
+
+.hero { max-width: 1120px; margin: 0 auto; padding-block: 56px 0; }
+.hero h1 { font-weight: 900; font-size: clamp(2.6rem, 7.4vw, 5.4rem); line-height: .95; letter-spacing: -0.045em; max-width: 13ch; text-wrap: balance; }
+.hero .lead { margin-top: 22px; max-width: 46ch; font-size: clamp(1.08rem, 2vw, 1.28rem); color: var(--muted); line-height: 1.45; }
+.cta { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 22px; border-radius: 12px; border: 1.5px solid var(--accent); background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 1rem; text-decoration: none; }
+.btn.quiet { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn.quiet:hover { border-color: var(--ink); }
+.status { font-size: .92rem; color: var(--ok); font-weight: 500; min-height: 1.4em; }
+
+/* ---------- la demo ---------- */
+.stage { max-width: 1120px; margin: 52px auto 0; }
+.sites { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+.sites span { color: var(--muted); font-size: .95rem; margin-right: 4px; }
+.site { min-height: 40px; padding: 0 16px; border-radius: 99px; border: 1.5px solid var(--line); background: transparent; font-weight: 500; }
+.site[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.window { position: relative; background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); border: 1px solid var(--line); overflow: hidden; }
+.chrome { height: 44px; display: flex; align-items: center; gap: 8px; padding: 0 14px; border-bottom: 1px solid var(--line); }
+.chrome i { width: 11px; height: 11px; border-radius: 50%; background: var(--line); }
+.url { margin-left: 10px; flex: 1; max-width: 420px; height: 28px; border-radius: 8px; background: var(--paper); display: flex; align-items: center; padding: 0 12px; font: 13px/1 var(--font-mono); color: var(--muted); overflow: hidden; white-space: nowrap; }
+.frame { position: relative; }
+.frame iframe { display: block; width: 100%; height: 560px; border: 0; background: #fff; }
+@media (max-width: 699px) { .frame iframe { height: 600px; } }
+
+/* il cursore è una lente: il nome del prodotto, in movimento */
+.lens { position: absolute; left: 0; top: 0; width: 44px; height: 44px; margin: -14px 0 0 -14px; pointer-events: none; z-index: 3; opacity: 0;
+  transition: transform .62s cubic-bezier(.3, .7, .2, 1), opacity .3s; will-change: transform; }
+.lens.on { opacity: 1; }
+.lens svg { width: 44px; height: 44px; filter: drop-shadow(0 3px 6px rgba(0,0,0,.28)); transition: transform .14s; }
+.lens.tap svg { transform: scale(.82); }
+.ripple { position: absolute; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--accent); margin: -14px 0 0 -14px; pointer-events: none; z-index: 2; animation: rip .5s ease-out forwards; }
+@keyframes rip { from { transform: scale(.4); opacity: 1; } to { transform: scale(2.2); opacity: 0; } }
+
+.caption { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; margin-top: 16px; min-height: 50px; }
+.say { font-size: 1.12rem; font-weight: 500; max-width: 60ch; }
+.say b { font-variant-numeric: tabular-nums; }
+.caption .btn { min-height: 46px; }
+
+/* ---------- il resto della pagina, sobrio ---------- */
+.body { max-width: 680px; margin: 0 auto; padding-block: 88px 64px; display: flex; flex-direction: column; gap: 64px; }
+section { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+h2 { font-weight: 800; font-size: clamp(1.5rem, 3.4vw, 1.9rem); letter-spacing: -0.025em; line-height: 1.15; text-wrap: balance; }
+.muted { color: var(--muted); }
+ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: flex; flex-direction: column; gap: 14px; }
+ol.steps li { counter-increment: s; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 14px; align-items: start; }
+ol.steps li::before { content: counter(s); font-weight: 700; font-size: .9rem; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--line); }
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
 .tab { background: none; border: 0; border-bottom: 3px solid transparent; padding: 10px 14px; color: var(--muted); font-weight: 500; min-height: 44px; margin-bottom: -1px; }
-.tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); font-weight: 700; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 700; }
 .panel { display: flex; flex-direction: column; gap: 14px; }
 .panel[hidden] { display: none; }
-.foot { color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--line); padding-top: 18px; }
-.foot a { color: var(--accent); }
-ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: flex; flex-direction: column; gap: 12px; }
-ol.steps li { counter-increment: s; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; align-items: start; }
-ol.steps li::before { content: counter(s); font-family: var(--font-mono); font-weight: 500; font-size: 0.85rem; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--code-bg); color: var(--fg); }
-.note { font-size: 0.9rem; color: var(--muted); border-left: 3px solid var(--line); padding-left: 12px; }
-
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 10px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-fg); font-weight: 700; }
-.btn.ghost { background: transparent; color: var(--accent); }
-.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.status { font-size: 0.9rem; color: var(--ok); font-weight: 500; }
-details { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+details { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
 summary { padding: 12px 14px; cursor: pointer; font-weight: 500; min-height: 44px; }
-textarea { display: block; width: 100%; height: 130px; border: 0; border-top: 1px solid var(--line); background: var(--code-bg); color: var(--fg); font-family: var(--font-mono); font-size: 12px; padding: 12px; resize: vertical; border-radius: 0 0 10px 10px; }
+textarea { display: block; width: 100%; height: 130px; border: 0; border-top: 1px solid var(--line); background: var(--code-bg); color: var(--ink); font-family: var(--font-mono); font-size: 12px; padding: 12px; resize: vertical; border-radius: 0 0 12px 12px; }
+code { font-family: var(--font-mono); font-size: .86em; background: var(--code-bg); padding: 1px 6px; border-radius: 5px; }
+.limits { display: grid; gap: 10px; padding-left: 20px; margin: 0; color: var(--muted); }
+.limits b { color: var(--ink); }
+.foot { color: var(--muted); font-size: .92rem; border-top: 1px solid var(--line); padding-top: 20px; }
 
-.demo { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
-.demo-bar { padding: 10px 14px; border-bottom: 1px solid var(--line); font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
-ul.lista { list-style: none; margin: 0; padding: 12px; display: grid; gap: 8px; }
-li.car { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
-li.car .foto { display: block; width: 100%; max-width: 200px; height: auto; border-radius: 8px; margin-bottom: 8px; }
-li.car h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
-.meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 0.9rem; color: var(--muted); }
-.meta .price { color: var(--ok); font-weight: 700; }
-
-.limits { display: grid; gap: 10px; padding-left: 18px; margin: 0; color: var(--muted); }
-.limits li { padding-left: 4px; }
-.limits b { color: var(--fg); font-weight: 700; }
-code { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-bg); padding: 1px 6px; border-radius: 5px; }
+@media (prefers-reduced-motion: reduce) { .lens { transition: none; } }
 </style>
 
-<main>
-  <header>
-    <p class="eyebrow">Prototipo</p>
-    <h1>ListLens</h1>
-    <p class="lead">Filtra e riordina le liste di qualsiasi sito, solo sul tuo telefono. Tocchi un annuncio, ListLens capisce la lista e ti dà filtri e ordinamento sui suoi campi.</p>
-  </header>
+<header class="top">
+  <div class="mark">
+    <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M17 17l6.5 6.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/><path d="M7 9h8M7 13h5" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round"/></svg>
+    ListLens
+  </div>
+  <a href="https://github.com/andrea6687/ListLens">Codice su GitHub</a>
+</header>
 
-  <section aria-labelledby="inst">
-    <h2 id="inst">Installa sul telefono</h2>
-    <div class="row">
-      <button class="btn" id="copy" type="button">Copia bookmarklet</button>
-      <span class="status" id="copy-status" role="status"></span>
+<div class="hero">
+  <h1>Filtri e ordinamento su qualsiasi lista</h1>
+  <p class="lead">Anche sui siti che non li hanno. Tocchi un annuncio, ListLens riconosce la lista e ti dà i filtri sui suoi campi: prezzo, zona, foto. Gira nel tuo browser, senza account.</p>
+  <div class="cta">
+    <button class="btn" id="copy" type="button">Copia bookmarklet</button>
+    <a class="btn quiet" href="#installa">Come si installa</a>
+    <span class="status" id="copy-status" role="status"></span>
+  </div>
+</div>
+
+<div class="stage">
+  <div class="sites" role="group" aria-label="Sito della demo">
+    <span>Guardala su</span>
+  </div>
+  <div class="window">
+    <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><div class="url" id="url"></div></div>
+    <div class="frame" id="frame">
+      <iframe id="demo" title="Demo: un sito di prova con ListLens. Puoi usarla anche tu."></iframe>
+      <div class="lens" id="lens" aria-hidden="true"><svg viewBox="0 0 44 44"><circle cx="17" cy="17" r="12" fill="rgba(255,255,255,.25)" stroke="#15222a" stroke-width="3.4"/><circle cx="17" cy="17" r="12" fill="none" stroke="#fff" stroke-width="1.2" opacity=".9"/><path d="M26 26l12 12" stroke="#15222a" stroke-width="5" stroke-linecap="round"/></svg></div>
     </div>
-    <div class="tabs" role="tablist" aria-label="Piattaforma">
+  </div>
+  <div class="caption">
+    <p class="say" id="say" aria-live="polite"></p>
+    <button class="btn" id="try" type="button">Ora prova tu</button>
+  </div>
+</div>
+
+<div class="body">
+  <section aria-labelledby="come">
+    <h2 id="come">Come funziona</h2>
+    <ol class="steps">
+      <li><span>Apri il sito con la lista e avvia ListLens dai preferiti. Tocca <b>Scegli la lista</b>.</span></li>
+      <li><span>Tocca un elemento qualsiasi, per esempio un annuncio. ListLens evidenzia tutti quelli simili e legge i loro campi. Le pubblicità restano fuori.</span></li>
+      <li><span>Tocca <b>Conferma</b>. Ogni campo ha il filtro adatto: scelte con il conteggio, intervallo da/a per i numeri, ricerca per il testo, foto vere o immagini generiche. E un menu per ordinare.</span></li>
+    </ol>
+    <p class="muted">Filtri e ordine restano salvati per quella pagina. Gli annunci che il sito aggiunge scorrendo, o cambiando pagina, vengono filtrati anche loro.</p>
+  </section>
+
+  <section aria-labelledby="installa">
+    <h2 id="installa">Installala in un minuto</h2>
+    <p class="muted">ListLens è un segnalibro: non si installa niente e funziona su iPhone, Android e computer.</p>
+    <div class="tabs" role="tablist" aria-label="Dispositivo">
       <button class="tab" role="tab" id="t-ios" aria-selected="true" aria-controls="p-ios" type="button">iPhone</button>
       <button class="tab" role="tab" id="t-and" aria-selected="false" aria-controls="p-and" type="button" tabindex="-1">Android</button>
       <button class="tab" role="tab" id="t-pc" aria-selected="false" aria-controls="p-pc" type="button" tabindex="-1">Computer</button>
     </div>
     <div class="panel" role="tabpanel" id="p-ios" aria-labelledby="t-ios">
       <ol class="steps">
-        <li><span>Tocca <b>Copia bookmarklet</b> qui sopra.</span></li>
-        <li><span>In Safari apri una pagina qualsiasi e aggiungila ai Preferiti (Condividi, poi Aggiungi ai Preferiti).</span></li>
-        <li><span>Apri i Preferiti, tieni premuto il nuovo segnalibro e scegli Modifica. Chiamalo <code>ListLens</code> e sostituisci l'indirizzo incollando il codice copiato.</span></li>
-        <li><span>Su un sito con una lista apri Preferiti e tocca <b>ListLens</b>.</span></li>
+        <li><span>Tocca <b>Copia bookmarklet</b> in cima alla pagina.</span></li>
+        <li><span>In Safari apri una pagina qualsiasi e aggiungila ai Preferiti (Condividi, poi Aggiungi segnalibro).</span></li>
+        <li><span>Apri i Preferiti, tocca Modifica e poi il nuovo segnalibro. Chiamalo <code>ListLens</code> e al posto dell'indirizzo incolla il codice copiato.</span></li>
+        <li><span>Su un sito con una lista apri i Preferiti e tocca <b>ListLens</b>.</span></li>
       </ol>
     </div>
     <div class="panel" id="p-and" role="tabpanel" aria-labelledby="t-and" hidden>
       <ol class="steps">
-        <li><span>Tocca <b>Copia bookmarklet</b> qui sopra.</span></li>
+        <li><span>Tocca <b>Copia bookmarklet</b> in cima alla pagina.</span></li>
         <li><span>Crea un segnalibro di una pagina qualsiasi, poi modificalo: nome <code>ListLens</code>, indirizzo incollato dal codice copiato.</span></li>
         <li><span><b>Firefox:</b> apri i segnalibri e tocca ListLens. <b>Chrome:</b> scrivi <code>ListLens</code> nella barra degli indirizzi e scegli il suggerimento con la stellina, perché dal menu dei segnalibri non parte.</span></li>
       </ol>
@@ -122,9 +190,10 @@ code { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-
     <div class="panel" id="p-pc" role="tabpanel" aria-labelledby="t-pc" hidden>
       <ol class="steps">
         <li><span>Mostra la barra dei preferiti e aggiungi un segnalibro chiamato <code>ListLens</code>.</span></li>
-        <li><span>Come indirizzo incolla il codice copiato con il pulsante qui sopra.</span></li>
+        <li><span>Come indirizzo incolla il codice copiato con <b>Copia bookmarklet</b>.</span></li>
         <li><span>Su un sito con una lista fai clic sul segnalibro. Passando il mouse sugli elementi vedi quello che verrà riconosciuto.</span></li>
       </ol>
+      <p class="muted">Su Chrome ed Edge c'è anche l'estensione, che riapplica i filtri da sola: le istruzioni sono su <a href="https://github.com/andrea6687/ListLens#computer-chrome-edge-firefox-safari">GitHub</a>.</p>
     </div>
     <details>
       <summary>Mostra il codice della bookmarklet</summary>
@@ -132,74 +201,44 @@ code { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-
     </details>
   </section>
 
-  <section aria-labelledby="usa">
-    <h2 id="usa">Come si usa</h2>
-    <ol class="steps">
-      <li><span>Apri il sito con la lista e avvia ListLens. Tocca <b>Scegli la lista</b>.</span></li>
-      <li><span>Tocca un elemento qualsiasi, per esempio un annuncio. ListLens evidenzia tutti gli elementi simili e legge i campi: prezzo, anno, regione, foto.</span></li>
-      <li><span>Conferma. Per ogni campo trovi il filtro adatto (scelta tra valori, intervallo, ricerca) e un menu per ordinare. Con <b>Foto</b> puoi tenere solo le foto vere o solo le immagini generiche di una categoria.</span></li>
-    </ol>
-  </section>
-
-  <section aria-labelledby="prova">
-    <h2 id="prova">Provala qui</h2>
-    <p>Una lista di annunci senza filtri. Alcune auto non hanno la foto e mostrano l'immagine generica della categoria (utilitaria o SUV). Avvia ListLens e scegli un'auto: tra i filtri trovi anche <b>Foto</b>.</p>
-    <div class="row">
-      <button class="btn ghost" id="run" type="button">Avvia ListLens su questa pagina</button>
-      <span class="status" id="run-status" role="status"></span>
-    </div>
-    <div class="demo">
-      <div class="demo-bar">autousate.example / annunci</div>
-      <ul class="lista" id="demo-lista"></ul>
-    </div>
+  <section aria-labelledby="privacy">
+    <h2 id="privacy">Resta tutto sul tuo telefono</h2>
+    <p class="muted">ListLens non ha un server e non fa richieste di rete. Filtri e ordine sono salvati nel browser, sul tuo dispositivo. Il sito non cambia per nessun altro: cambia solo quello che vedi tu.</p>
   </section>
 
   <section aria-labelledby="lim">
     <h2 id="lim">Limiti di questa versione</h2>
     <ul class="limits">
-      <li><b>Si riapplica a mano.</b> Filtri e ordine vengono ricordati per pagina, ma li ritrovi toccando di nuovo il segnalibro.</li>
-      <li><b>Siti che ridisegnano la lista.</b> Se il sito ricostruisce l'elenco da solo, può annullare l'ordinamento. Gli elementi nuovi o sostituiti (scorrendo o cambiando pagina) vengono invece rilevati e filtrati.</li>
+      <li><b>Con il segnalibro si riapplica a mano.</b> Filtri e ordine vengono ricordati, ma li ritrovi toccando di nuovo il segnalibro. L'estensione per computer li riapplica da sola.</li>
+      <li><b>Siti che ridisegnano la lista.</b> Se il sito ricostruisce l'elenco con gli stessi elementi, può annullare l'ordinamento.</li>
       <li><b>Siti molto protetti.</b> Alcuni blocchi di sicurezza possono impedire l'avvio da segnalibro.</li>
-      <li><b>Solo liste dentro un unico contenitore.</b> Le pagine a più sezioni separate vanno scelte una alla volta.</li>
+      <li><b>Una lista alla volta.</b> Le pagine a più sezioni separate vanno scelte una alla volta.</li>
     </ul>
   </section>
 
   <footer class="foot">
-    <p>Codice, istruzioni e segnalazioni su <a href="https://github.com/andrea6687/ListLens">GitHub</a>. Licenza MIT © Andrea Sportello. ListLens non fa richieste di rete: filtri e ordine restano sul tuo dispositivo.</p>
+    <p>Codice, istruzioni e segnalazioni su <a href="https://github.com/andrea6687/ListLens">GitHub</a>. Licenza MIT © Andrea Sportello.</p>
   </footer>
-</main>
+</div>
 
 <script type="text/plain" id="ll-src">(()=>{"use strict";if(window.__listLens)return void window.__listLens.toggle();const e=/-?\d[\d.,'’\s]*\d|-?\d/,t=/^(eur|euro|km|kg|cv|kw|hp|mq|m2|m|cm|mm|l|anni|mesi|pz|k)?$/,n=e=>e.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),o=e=>window.CSS&&CSS.escape?CSS.escape(e):e.replace(/[^\w-]/g,"\\$&"),s=e=>[...e.childNodes].filter(e=>3===e.nodeType).map(e=>e.textContent).join(" ").replace(/\s+/g," ").trim(),l=e=>[...e.classList];function i(t){const n=String(t).match(e);if(!n)return NaN;let o=n[0].replace(/[\s'’]/g,"");const s=o.lastIndexOf(","),l=o.lastIndexOf(".");return s>-1&&l>-1?o=s>l?o.replace(/\./g,"").replace(",","."):o.replace(/,/g,""):s>-1?o=o.replace(",","."):l>-1&&/^-?\d{1,3}(\.\d{3})+$/.test(o)&&(o=o.replace(/\./g,"")),parseFloat(o)}function a(n){const o=n.match(e);if(!o)return!1;const s=n.replace(o[0],"").toLowerCase().replace(/[€$£%.,/\s-]/g,"");return t.test(s)}const r=(e,t={},...n)=>{const o=document.createElement(e);for(const[e,n]of Object.entries(t))"class"===e?o.className=n:e.startsWith("on")?o.addEventListener(e.slice(2),n):!1!==n&&null!=n&&o.setAttribute(e,!0===n?"":n);return n.flat().filter(Boolean).forEach(e=>o.append(e instanceof Node?e:document.createTextNode(String(e)))),o},c={itemSel:null,parent:null,rows:[],markers:[],fields:[],filters:{},sort:null,mode:"intro",open:!0,obs:null,busy:!1,msg:"",count:0,shown:0,countEl:null},p={key:()=>"listlens:"+location.host+location.pathname,load(){try{return JSON.parse(localStorage.getItem(this.key()))}catch(e){return null}},save(e){try{localStorage.setItem(this.key(),JSON.stringify(e))}catch(e){}},clear(){try{localStorage.removeItem(this.key())}catch(e){}}};function d(e,t){if(e.tagName!==t.tagName)return!1;const n=l(e),o=l(t);if(!n.length&&!o.length)return!0;return n.filter(e=>o.includes(e)).length/new Set([...n,...o]).size>=.5}function f(e){const t=[];return function e(n,o){[...n.children].forEach((n,l)=>{if(/^(script|style|noscript|svg)$/i.test(n.tagName))return;const i=o.concat(l),a=s(n);a&&t.push({key:i.join("."),path:i,text:a,el:n}),e(n,i)})}(e,[]),t}const u=["data-src","data-lazy-src","data-original","data-lazy"];function m(e){for(const t of u){const n=e.getAttribute(t);if(n&&!/^data:image\/gif/i.test(n))return n.trim()}return(e.getAttribute("src")||"").trim()}function h(e){let t=e&&1===e.nodeType?e:e&&e.parentElement,n=null,o=0;for(;t&&t!==document.documentElement&&o<10;){const e=t.parentElement;if(e){const o=[...e.children].filter(e=>d(e,t));o.length>=3&&f(t).length>=2&&(!n||o.length>n.sibs.length)&&(n={el:t,parent:e,sibs:o})}t=e,o++}return n}function g(e){const t=e.sibs.map(l).reduce((e,t)=>e.filter(e=>t.includes(e)));return function(e){const t=[];for(;e&&1===e.nodeType&&e!==document.documentElement;){if(e.id&&1===document.querySelectorAll("#"+o(e.id)).length){t.unshift("#"+o(e.id));break}let n=e.tagName.toLowerCase();const s=e.parentElement;if(s){const t=[...s.children].filter(t=>t.tagName===e.tagName);t.length>1&&(n+=":nth-of-type("+(t.indexOf(e)+1)+")")}t.unshift(n),e=s}return t.join(" > ")}(e.parent)+" > "+e.el.tagName.toLowerCase()+t.slice(0,3).map(e=>"."+o(e)).join("")}function b(){let e=[];try{e=[...document.querySelectorAll(c.itemSel)]}catch(e){}e=e.filter(e=>!R.contains(e));const t=e.length?e[0].parentElement:null;return e.filter(e=>e.parentElement===t)}const x=[[/^(pric|prezz|cost)/,"Prezzo"],[/^(year|anno|immatr)/,"Anno"],[/^(km|mileage|chilom)/,"Km"],[/^region/,"Regione"],[/^(city|citt|comune)/,"Città"],[/^(loc|luogo|place)/,"Luogo"],[/^(title|titol|name|nome|model)/,"Titolo"],[/^(date|data$)/,"Data"],[/^(fuel|carbur|alimentaz)/,"Carburante"]],y=e=>{const t=(e=>e.replace(/([a-z])([A-Z])/g,"$1 $2").toLowerCase().split(/[^a-z0-9]+/).filter(Boolean))(e),n=x.find(([e])=>t.some(t=>e.test(t)));return n?n[1]:null};function v(e){return e.re=e.prefix?new RegExp("^\\s*"+n(e.prefix)+"\\s*:\\s*","i"):null,e}const k="foto",w="nessuna",E=/(placeholder|no[-_ ]?(image|img|photo|foto|pic)|nofoto|senza[-_ ]?foto|foto[-_ ]?non|missing|default[-_ ]?(image|img|photo)?|dummy|blank)/i;function S(e){let t=e.split(/[?#]/)[0].split("/").pop()||"";try{t=decodeURIComponent(t)}catch(e){}return t.replace(/\.\w+$/,"").replace(/[-_]+/g," ").trim()}function N(e,t){let n=e;for(const e of t.path)n=n&&n.children[e];return n&&"IMG"===n.tagName?n:null}function z(e,t){const n={},o={};t.forEach(({src:e,alt:t})=>{e&&(n[e]=(n[e]||0)+1,(o[e]=o[e]||[]).push(t))});const s=new Set(e.ph||[]);Object.keys(n).forEach(e=>{(n[e]>1||!/^data:/.test(e)&&E.test(S(e)))&&s.add(e)});const l=Object.assign({},e.labels);let i=Object.keys(l).length+1;return s.forEach(e=>{if(l[e]||!n[e])return;const t=new Set(o[e]),s=1===t.size?[...t][0]:"",a=/^data:/.test(e)?"":S(e);l[e]=s||a||"Immagine generica "+i++}),e.ph=[...s],e.labels=l,t.map(({src:e})=>e?s.has(e)?e:k:w)}function L(e){const t=new Map,n=e.length;e.forEach(e=>function(e){const t=[];return function e(n,o){[...n.children].forEach((n,s)=>{if(/^(script|style|noscript|svg)$/i.test(n.tagName))return;const l=o.concat(s);"IMG"===n.tagName?t.push({key:"img:"+l.join("."),path:l,src:m(n),alt:(n.getAttribute("alt")||"").trim()}):e(n,l)})}(e,[]),t}(e).forEach(e=>{let n=t.get(e.key);n||(n={key:e.key,path:e.path,seen:0},t.set(e.key,n)),n.seen++}));for(const o of t.values()){if(o.seen<.5*n)continue;const t={key:o.key,path:o.path,name:"Foto",type:"img",prefix:null,ph:[],labels:{}};if(z(t,e.map(e=>{const n=N(e,t);return n?{src:m(n),alt:(n.getAttribute("alt")||"").trim()}:{src:"",alt:""}})).includes(k)&&Object.keys(t.labels).length)return t}return null}function C(){c.busy=!0,c.markers.forEach(e=>e.remove()),c.markers=[];const e=new Map(c.rows.map(e=>[e.el,e.i]));let t=1e6;const n=b();n.forEach(e=>{const t=document.createComment("ll");e.before(t),c.markers.push(t)}),c.rows=n.map(n=>{const o={},l={};return c.fields.forEach(e=>{"img"!==e.type&&(o[e.key]=function(e,t){let n=e;for(const e of t.path)n=n&&n.children[e];if(!n)return"";let o=s(n);return t.re&&(o=o.replace(t.re,"")),o}(n,e),l[e.key]="num"===e.type?i(o[e.key]):NaN)}),{el:n,i:e.has(n)?e.get(n):t++,v:o,n:l,ok:!0}}).sort((e,t)=>e.i-t.i),c.fields.filter(e=>"img"===e.type).forEach(e=>{const t=z(e,c.rows.map(t=>{const n=N(t.el,e);return n?{src:m(n),alt:(n.getAttribute("alt")||"").trim()}:{src:"",alt:""}}));c.rows.forEach((n,o)=>{n.v[e.key]=t[o]})}),c.rows.forEach((e,t)=>e.i=t),c.parent=n[0]?n[0].parentElement:null,function(){c.obs&&c.obs.disconnect();if(!document.body)return;let e=null;c.obs=new MutationObserver(()=>{c.busy||e||(e=setTimeout(()=>{e=null,"tools"===c.mode&&function(){const e=b();if(e.length!==c.rows.length)return!0;const t=new Set(c.rows.map(e=>e.el));return e.some(e=>!t.has(e))}()&&(C(),O(),c.open&&H())},250))}),c.obs.observe(document.body,{childList:!0,subtree:!0})}(),c.busy=!1}function O(){if(!c.rows.length)return;c.busy=!0;let e=0;c.rows.forEach(t=>{var n;t.ok=(e=>c.fields.every(t=>{const n=c.filters[t.key];if(!n)return!0;if("cat"===t.type||"img"===t.type)return!n.sel||!n.sel.size||n.sel.has(e.v[t.key]);if("num"===t.type){const o=e.n[t.key];return(null==n.min||o>=n.min)&&(null==n.max||o<=n.max)}return!n.q||e.v[t.key].toLowerCase().includes(n.q.toLowerCase())}))(t),n=t.el,!t.ok?(n.hasAttribute("data-ll-h")||(n.setAttribute("data-ll-h","1"),n.dataset.llPv=n.style.getPropertyValue("display"),n.dataset.llPp=n.style.getPropertyPriority("display")),n.style.setProperty("display","none","important")):n.hasAttribute("data-ll-h")&&(n.removeAttribute("data-ll-h"),n.style.removeProperty("display"),n.dataset.llPv&&n.style.setProperty("display",n.dataset.llPv,n.dataset.llPp)),t.ok&&e++});const t=c.rows.slice(),n=c.sort&&c.fields.find(e=>e.key===c.sort.key);if(n){const e=c.sort.dir;t.sort((t,o)=>{let s;if("num"===n.type){const e=t.n[n.key],l=o.n[n.key];if(isNaN(e)&&isNaN(l))s=0;else{if(isNaN(e))return 1;if(isNaN(l))return-1;s=e-l}}else s=t.v[n.key].localeCompare(o.v[n.key],"it",{numeric:!0,sensitivity:"base"});return s*e||t.i-o.i})}t.forEach((e,t)=>c.markers[t].after(e.el)),c.obs&&c.obs.takeRecords(),c.busy=!1,c.shown=e,J(),function(){if(!c.itemSel||"tools"!==c.mode)return;p.save({itemSel:c.itemSel,fields:c.fields.map(({key:e,path:t,name:n,type:o,prefix:s,ph:l,labels:i})=>"img"===o?{key:e,path:t,name:n,type:o,prefix:s,ph:l,labels:i}:{key:e,path:t,name:n,type:o,prefix:s}),sort:c.sort,filters:Object.fromEntries(Object.entries(c.filters).map(([e,t])=>[e,{sel:t.sel?[...t.sel]:void 0,min:t.min,max:t.max,q:t.q}]))})}()}function T(){c.filters={},c.sort=null,c.rows.length&&O(),c.obs&&c.obs.disconnect(),c.markers.forEach(e=>e.remove()),c.rows=[],c.markers=[]}const $=new Set;function j(e){$.has(e)||(e.dataset.llOl=e.style.outline,e.style.outline="3px solid #2563eb",e.style.outlineOffset="-3px",$.add(e))}function A(){$.forEach(e=>{e.style.outline=e.dataset.llOl||"",e.style.outlineOffset="",delete e.dataset.llOl}),$.clear()}let _=null;function I(){_&&_(),T(),A(),c.mode="pick",c.msg="",c.open=!1,H();const e=e=>e.composedPath&&e.composedPath().includes(R),t=t=>{e(t)||(t.preventDefault(),t.stopPropagation(),t.stopImmediatePropagation(),q(t.target))},n=t=>{if("mouse"!==t.pointerType||e(t))return;A();const n=h(t.target);n&&j(n.el)};document.addEventListener("click",t,!0),document.addEventListener("pointermove",n,!0),_=()=>{document.removeEventListener("click",t,!0),document.removeEventListener("pointermove",n,!0),A(),_=null}}function P(){_&&_(),c.mode="intro",c.open=!0,H()}function q(e){const t=h(e);if(!t)return c.msg="Non vedo una lista qui. Tocca un elemento di un annuncio.",void H();_&&_(),c.itemSel=g(t);const o=b();c.fields=function(e){const t=new Map,o=e.length;e.forEach(e=>f(e).forEach(e=>{let n=t.get(e.key);n||(n={key:e.key,path:e.path,vals:[],hint:"",tag:e.el.tagName},t.set(e.key,n)),n.vals.push(e.text),n.hint||"string"!=typeof e.el.className||(n.hint=e.el.className)}));const s=[],l=new Set;for(const e of t.values()){if(e.vals.length<.5*o)continue;let t=null;const i=e.vals.map(e=>e.match(/^([^:\d]{2,24}):\s*(.+)$/)).filter(Boolean);if(i.length>=.8*e.vals.length){const o=i[0][1].trim();if(i.filter(e=>e[1].trim().toLowerCase()===o.toLowerCase()).length>=.8*i.length){t=o;const s=new RegExp("^\\s*"+n(o)+"\\s*:\\s*","i");e.vals=e.vals.map(e=>e.replace(s,""))}}const r=new Set(e.vals).size;if(r<2)continue;let c="text";e.vals.filter(a).length>=.8*e.vals.length?c="num":r<=40&&r<=Math.max(2,.7*o)&&(c="cat");let p=t;p||(p=y(e.hint)),!p&&/^H[1-3]$/.test(e.tag)&&(p="Titolo"),p||(e.vals.filter(e=>/[€$£]/.test(e)).length>=.5*e.vals.length?p="Prezzo":e.vals.filter(e=>/\bkm\b/i.test(e)).length>=.5*e.vals.length?p="Km":e.vals.filter(e=>/^(19|20)\d\d$/.test(e.trim())).length>=.5*e.vals.length&&(p="Anno")),p||(p="Campo "+(s.length+1));let d=p,f=2;for(;l.has(d);)d=p+" "+f++;if(l.add(d),s.push(v({key:e.key,path:e.path,name:d,type:c,prefix:t})),s.length>=12)break}const i=L(e);return i&&s.push(v(i)),s}(o),o.forEach(j),c.count=o.length,c.mode="confirm",c.msg="",H()}function M(){A(),c.mode="tools",c.open=!0,c.filters={},c.sort=null,C(),O(),H()}function F(){p.clear(),T(),c.mode="intro",c.fields=[],c.itemSel=null,H()}const R=r("div",{id:"listlens-host"});R.style.cssText="all:initial;position:fixed;left:0;top:0;z-index:2147483647";const B=R.attachShadow({mode:"open"});B.append(r("style",{},"\n*{box-sizing:border-box;font-family:-apple-system,system-ui,Segoe UI,Roboto,sans-serif;-webkit-tap-highlight-color:transparent}\nbutton,select,input{font-size:15px}\n.fab{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));width:52px;height:52px;border-radius:26px;border:0;background:#111;color:#fff;font-size:22px;box-shadow:0 4px 14px rgba(0,0,0,.35)}\n.sheet{position:fixed;left:0;right:0;bottom:0;max-height:72vh;display:flex;flex-direction:column;background:#fff;color:#111;border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.28);padding-bottom:env(safe-area-inset-bottom)}\n@media(min-width:700px){.sheet{left:auto;right:16px;bottom:16px;width:380px;border-radius:16px}}\n.hd{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid #e5e7eb}\n.hd b{flex:1}.count{font-size:13px;color:#555;background:#f3f4f6;padding:3px 9px;border-radius:99px}\n.x{border:0;background:none;font-size:18px;padding:6px 8px;color:#444}\n.body{padding:12px 14px;overflow:auto;display:flex;flex-direction:column;gap:12px}\np{margin:0;font-size:14px;color:#444;line-height:1.4}\n.pri,.sec{border-radius:10px;padding:10px 14px;min-height:42px;border:1px solid #111}\n.pri{background:#111;color:#fff}.sec{background:#fff;color:#111;border-color:#d1d5db}\n.row{display:flex;gap:8px;align-items:center}.row select{flex:1;min-height:42px;border:1px solid #d1d5db;border-radius:10px;padding:0 8px;background:#fff}\n.dir{min-width:46px;min-height:42px;border:1px solid #d1d5db;border-radius:10px;background:#fff}\n.card{border:1px solid #e5e7eb;border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px}\n.ft{display:flex;justify-content:space-between;gap:8px;font-size:14px}.ex{color:#888;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:50%}\n.chips{display:flex;flex-wrap:wrap;gap:6px}\n.chip{border:1px solid #d1d5db;background:#fff;border-radius:99px;padding:7px 12px;font-size:14px;color:#111;display:inline-flex;align-items:center;gap:6px;max-width:100%}\n.th{width:24px;height:24px;margin:-3px 0 -3px -6px;border-radius:50%;object-fit:cover;background:#f3f4f6;flex:none}\n.chip.on{background:#2563eb;border-color:#2563eb;color:#fff}\n.mm{display:flex;gap:8px}.mm input,.q{flex:1;min-width:0;min-height:42px;border:1px solid #d1d5db;border-radius:10px;padding:0 10px}\n.ft2{display:flex;gap:8px;flex-wrap:wrap}.ft2 .sec{flex:1;min-width:90px;padding:8px 10px;min-height:38px;font-size:14px}\n.banner{position:fixed;left:10px;right:10px;top:calc(10px + env(safe-area-inset-top));display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:#111;color:#fff;padding:12px 14px;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.35);font-size:14px}\n.banner .bb{display:flex;gap:8px}.banner .sec{background:#333;color:#fff;border-color:#555;min-height:38px;padding:6px 12px}.banner .pri{background:#2563eb;border-color:#2563eb;min-height:38px;padding:6px 12px}\n"));const D=r("div");B.append(D);const U=()=>r("button",{class:"fab","aria-label":"ListLens",onclick:()=>{c.open=!0,H()}},"⚡"),G=(e,...t)=>r("div",{class:"banner"},r("span",{},e),r("div",{class:"bb"},...t));function J(){c.countEl&&(c.countEl.textContent=c.shown+" / "+c.rows.length)}function K(e,t){e.sel&&e.sel.forEach(e=>{e in t||(t[e]=0)})}function H(){if(D.textContent="",c.countEl=null,"pick"===c.mode)return void D.append(G(c.msg||"Tocca un elemento della lista (es. un annuncio)",r("button",{class:"sec",onclick:P},"Annulla")));if("confirm"===c.mode){const e=c.fields.length>0;return void D.append(G(e?`Trovati ${c.count} elementi, ${c.fields.length} campi`:`Trovati ${c.count} elementi, ma nessun campo leggibile`,r("div",{class:"bb"},r("button",{class:"sec",onclick:I},"Riprova"),e&&r("button",{class:"pri",onclick:M},"Conferma"))))}if(!c.open)return void D.append(U());const e="tools"===c.mode;e&&(c.countEl=r("span",{class:"count"})),D.append(r("div",{class:"sheet"},r("div",{class:"hd"},r("b",{},"⚡ ListLens"),c.countEl,r("button",{class:"x","aria-label":"Chiudi",onclick:()=>{c.open=!1,H()}},"✕")),e?function(){const e=r("div",{class:"body"}),t=r("button",{class:"dir",onclick:e=>{c.sort&&(c.sort.dir*=-1,e.currentTarget.textContent=c.sort.dir>0?"▲":"▼",O())}},c.sort&&c.sort.dir<0?"▼":"▲"),n=r("select",{onchange:e=>{c.sort=e.target.value?{key:e.target.value,dir:c.sort?c.sort.dir:1}:null,O()}},r("option",{value:""},"Ordine originale"),c.fields.filter(e=>"img"!==e.type).map(e=>r("option",{value:e.key,selected:!(!c.sort||c.sort.key!==e.key)},"Ordina per "+e.name)));return e.append(r("div",{class:"row"},n,t)),c.fields.forEach(t=>{const n=c.filters[t.key]||(c.filters[t.key]={}),o="img"===t.type?"foto vere o immagini generiche":c.rows[0]?c.rows[0].v[t.key]:"",s=r("div",{class:"card"},r("div",{class:"ft"},r("b",{},t.name),r("span",{class:"ex"},o)));if("img"===t.type){const e={};c.rows.forEach(n=>{const o=n.v[t.key];e[o]=(e[o]||0)+1}),K(n,e);const o=e=>e===k?"Foto vera":e===w?"Senza immagine":t.labels&&t.labels[e]||"Immagine generica",l=r("div",{class:"chips"}),i=e=>e===k?0:e===w?2:1;Object.entries(e).sort((e,t)=>i(e[0])-i(t[0])||t[1]-e[1]).forEach(([e,t])=>{const s=e!==k&&e!==w?r("img",{class:"th",src:e,alt:""}):null;l.append(r("button",{class:"chip"+(n.sel&&n.sel.has(e)?" on":""),title:o(e),onclick:t=>{n.sel=n.sel||new Set,n.sel.has(e)?n.sel.delete(e):n.sel.add(e),t.currentTarget.classList.toggle("on"),O()}},s,o(e)+" · "+t))}),s.append(l)}else if("cat"===t.type){const e={};c.rows.forEach(n=>{const o=n.v[t.key];o&&(e[o]=(e[o]||0)+1)}),K(n,e);const o=r("div",{class:"chips"});Object.entries(e).sort((e,t)=>t[1]-e[1]||e[0].localeCompare(t[0],"it")).forEach(([e,t])=>o.append(r("button",{class:"chip"+(n.sel&&n.sel.has(e)?" on":""),onclick:t=>{n.sel=n.sel||new Set,n.sel.has(e)?n.sel.delete(e):n.sel.add(e),t.currentTarget.classList.toggle("on"),O()}},e+" · "+t))),s.append(o)}else if("num"===t.type){const e=c.rows.map(e=>e.n[t.key]).filter(e=>!isNaN(e)),o=Math.min(...e),l=Math.max(...e),i=(e,t)=>r("input",{type:"number",inputmode:"decimal",placeholder:t,value:null!=n[e]?n[e]:"",oninput:t=>{n[e]=""===t.target.value?null:parseFloat(t.target.value),O()}}),a=t=>e.length?" "+t.toLocaleString("it-IT"):"";s.append(r("div",{class:"mm"},i("min","da"+a(o)),i("max","a"+a(l))))}else s.append(r("input",{class:"q",type:"search",placeholder:"Cerca in "+t.name.toLowerCase(),value:n.q||"",oninput:e=>{n.q=e.target.value,O()}}));e.append(s)}),e.append(r("div",{class:"ft2"},r("button",{class:"sec",onclick:()=>{c.filters={},c.sort=null,O(),H()}},"Azzera"),r("button",{class:"sec",onclick:I},"Cambia lista"),r("button",{class:"sec",onclick:F},"Dimentica"))),e}():r("div",{class:"body"},r("p",{},"Filtra e riordina le liste di questa pagina, solo per te. Tocca il pulsante e poi un elemento della lista."),r("button",{class:"pri",onclick:I},"Scegli la lista")))),e&&J()}const V=!0===window.__LISTLENS_AUTO,W=p.load(),Z=!(!W||!W.itemSel);Z&&(c.itemSel=W.itemSel,c.fields=(W.fields||[]).map(v),c.sort=W.sort||null,Object.entries(W.filters||{}).forEach(([e,t])=>{c.filters[e]={...t,sel:t.sel?new Set(t.sel):void 0}}));const Q=()=>Z&&b().length>=2,X={toggle(){"pick"!==c.mode&&"confirm"!==c.mode&&(c.open=!c.open,H())},S:c,apply:O,parseNum:i,detectFrom:h,startFrom:q,confirm:M};function Y(){window.__listLens&&window.__listLens!==X||(window.__listLens=X,document.documentElement.append(R),Q()&&(c.mode="tools",C(),O()),c.open=!V,H())}if(V){if(Z)if(Q())Y();else{let e=0;const t=setInterval(()=>{Q()?(clearInterval(t),Y()):++e>=20&&clearInterval(t)},500)}}else Y()})();</script>
 <script>
 (function () {
-  var DATA = [
-    ['Fiat Panda 1.2 Easy', 8900, 2018, 85000, 'Lazio', 'f'],
-    ['Volkswagen Golf 1.6 TDI', 12500, 2017, 112000, 'Lombardia', 'u'],
-    ['Peugeot 208 PureTech', 11200, 2019, 54000, 'Piemonte', 'f'],
-    ['BMW 320d Touring', 18900, 2016, 140000, 'Lazio', 'f'],
-    ['Renault Clio 1.5 dCi', 7400, 2016, 128000, 'Campania', 'u'],
-    ['Toyota Yaris Hybrid', 13800, 2020, 41000, 'Lombardia', 'f'],
-    ['Audi A3 Sportback', 16500, 2018, 96000, 'Veneto', 'f'],
-    ['Fiat 500X Cross', 14200, 2019, 62000, 'Lazio', 's'],
-    ['Mercedes Classe A 180d', 21500, 2019, 58000, 'Lombardia', 'f'],
-    ['Jeep Renegade 1.6 MJT', 15900, 2018, 87000, 'Campania', 's']
-  ];
-  var fmt = function (n) { return n.toLocaleString('it-IT'); };
-  /* foto: ogni foto vera è diversa; gli annunci senza foto mostrano l'immagine generica della categoria */
-  var svg = function (bg, txt) { return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="160" height="100"><rect width="160" height="100" fill="' + bg + '"/><text x="80" y="56" font-size="13" text-anchor="middle" fill="#fff" font-family="sans-serif">' + txt + '</text></svg>'); };
-  var PH = { u: [svg('#9ca3af', 'Utilitaria'), 'Foto non disponibile: utilitaria'], s: [svg('#6b7280', 'SUV'), 'Foto non disponibile: SUV'] };
-  var nFoto = 0;
-  var photo = function (t, k) { return k === 'f' ? [svg('hsl(' + (nFoto++ * 37 % 360) + ',55%,45%)', t.split(' ')[0]), t] : PH[k]; };
-  var list = document.getElementById('demo-lista');
-  DATA.forEach(function (r) {
-    var li = document.createElement('li');
-    li.className = 'car';
-    var ph = photo(r[0], r[5]);
-    li.innerHTML = '<img class="foto" src="' + ph[0] + '" alt="' + ph[1] + '"><h3>' + r[0] + '</h3><div class="meta"><span class="price">€ ' + fmt(r[1]) + '</span><span>Anno: ' + r[2] + '</span><span>' + fmt(r[3]) + ' km</span><span class="region">Regione: ' + r[4] + '</span></div>';
-    list.appendChild(li);
+  'use strict';
+  /* ================= copia bookmarklet ================= */
+  var code = document.getElementById('code');
+  var cs = document.getElementById('copy-status');
+  document.getElementById('copy').addEventListener('click', function () {
+    var done = function () { cs.textContent = 'Copiato. Ora incollalo come indirizzo di un segnalibro.'; };
+    var fallback = function () {
+      var d = code.closest('details'); if (d) d.open = true;
+      code.focus(); code.select();
+      cs.textContent = 'Codice selezionato: usa Copia dal menu.';
+    };
+    try { navigator.clipboard.writeText(code.value).then(done, fallback); } catch (e) { fallback(); }
   });
 
-  /* schede */
+  /* ================= schede installazione ================= */
   var tabs = [].slice.call(document.querySelectorAll('.tab'));
   tabs.forEach(function (t) {
     t.addEventListener('click', function () {
@@ -212,29 +251,387 @@ code { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-
     });
   });
 
-  /* copia bookmarklet */
-  var code = document.getElementById('code');
-  var cs = document.getElementById('copy-status');
-  document.getElementById('copy').addEventListener('click', function () {
-    var done = function () { cs.textContent = 'Copiato. Ora incollalo nel segnalibro.'; };
-    var fallback = function () {
-      var d = code.closest('details'); if (d) d.open = true;
-      code.focus(); code.select();
-      cs.textContent = 'Selezionato: usa Copia dal menu del telefono.';
-    };
-    try {
-      navigator.clipboard.writeText(code.value).then(done, fallback);
-    } catch (e) { fallback(); }
+  /* ================= i siti di prova ================= */
+  var fmt = function (n) { return n.toLocaleString('it-IT'); };
+  var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); };
+  var svg = function (bg, txt, fg) {
+    return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="160" height="110"><rect width="160" height="110" fill="' + bg + '"/><text x="80" y="62" font-size="15" font-weight="700" text-anchor="middle" fill="' + (fg || '#fff') + '" font-family="Arial,sans-serif">' + txt + '</text></svg>');
+  };
+  var hue = 0;
+  var real = function (txt) { hue = (hue + 47) % 360; return [svg('hsl(' + hue + ',52%,46%)', txt), txt]; };
+
+  var SITES = [
+    {
+      id: 'auto', label: 'Auto usate', url: 'autousate.example/annunci', brand: 'AutoUsate', color: '#d7261e', item: 'annuncio',
+      ad: 'Finanziamenti auto a tasso zero: scopri come',
+      rows: [
+        ['Fiat Panda 1.2 Easy', 8900, 'Anno: 2018', '85.000 km', 'Regione: Lazio', 'f'],
+        ['Volkswagen Golf 1.6 TDI', 12500, 'Anno: 2017', '112.000 km', 'Regione: Lombardia', 'u'],
+        ['Peugeot 208 PureTech', 11200, 'Anno: 2019', '54.000 km', 'Regione: Piemonte', 'f'],
+        ['BMW 320d Touring', 18900, 'Anno: 2016', '140.000 km', 'Regione: Lazio', 'f'],
+        ['Renault Clio 1.5 dCi', 7400, 'Anno: 2016', '128.000 km', 'Regione: Campania', 'u'],
+        ['Toyota Yaris Hybrid', 13800, 'Anno: 2020', '41.000 km', 'Regione: Lazio', 'f'],
+        ['Audi A3 Sportback', 16500, 'Anno: 2018', '96.000 km', 'Regione: Veneto', 'f'],
+        ['Fiat 500X Cross', 14200, 'Anno: 2019', '62.000 km', 'Regione: Lazio', 's'],
+        ['Mercedes Classe A 180d', 21500, 'Anno: 2019', '58.000 km', 'Regione: Lombardia', 'f'],
+        ['Jeep Renegade 1.6 MJT', 15900, 'Anno: 2018', '87.000 km', 'Regione: Campania', 's'],
+        ['Ford Fiesta 1.1', 9800, 'Anno: 2019', '47.000 km', 'Regione: Lazio', 'u'],
+        ['Opel Corsa 1.2', 10400, 'Anno: 2020', '39.000 km', 'Regione: Piemonte', 'f'],
+        ['Citroën C3 BlueHDi', 8200, 'Anno: 2017', '99.000 km', 'Regione: Veneto', 'f'],
+        ['Alfa Romeo Giulietta', 11800, 'Anno: 2016', '118.000 km', 'Regione: Lazio', 'f'],
+        ['Dacia Duster 1.5 dCi', 12900, 'Anno: 2019', '76.000 km', 'Regione: Campania', 's'],
+        ['Skoda Octavia Wagon', 13500, 'Anno: 2018', '104.000 km', 'Regione: Lazio', 'f'],
+        ['Kia Picanto 1.0', 6900, 'Anno: 2017', '68.000 km', 'Regione: Lombardia', 'f'],
+        ['Hyundai Tucson 1.6', 17900, 'Anno: 2019', '71.000 km', 'Regione: Lazio', 's'],
+        ['Lancia Ypsilon 1.2', 7900, 'Anno: 2018', '64.000 km', 'Regione: Lazio', 'u'],
+        ['Nissan Qashqai 1.5', 14900, 'Anno: 2018', '92.000 km', 'Regione: Veneto', 'f']
+      ],
+      ph: { u: ['#9ca3af', 'Foto non disponibile: utilitaria', 'Utilitaria'], s: ['#6b7280', 'Foto non disponibile: SUV', 'SUV'] },
+      steps: [
+        { cat: 'Regione', v: 'Lazio', say: 'Solo il Lazio' },
+        { max: 'Prezzo', v: 15000, say: 'Prezzo fino a 15.000 €' },
+        { cat: 'Foto', v: 'Foto vera', say: 'Solo annunci con la foto vera' },
+        { sort: 'Prezzo', dir: 1, say: 'Dal più economico' }
+      ]
+    },
+    {
+      id: 'case', label: 'Case in affitto', url: 'affittiroma.example/bilocali', brand: 'AffittiRoma', color: '#0e7c66', item: 'casa',
+      ad: 'Mutuo in 24 ore: chiedi un preventivo gratuito',
+      rows: [
+        ['Bilocale luminoso con balcone', 1150, 'Zona: Pigneto', 'Superficie: 58 mq', 'Piano: 3', 'f'],
+        ['Trilocale ristrutturato', 1450, 'Zona: San Lorenzo', 'Superficie: 82 mq', 'Piano: 1', 'f'],
+        ['Monolocale arredato', 780, 'Zona: Pigneto', 'Superficie: 32 mq', 'Piano: 0', 'n'],
+        ['Bilocale vicino metro', 990, 'Zona: Centocelle', 'Superficie: 50 mq', 'Piano: 2', 'f'],
+        ['Attico con terrazzo', 1900, 'Zona: Monti', 'Superficie: 74 mq', 'Piano: 5', 'f'],
+        ['Bilocale con cortile', 1080, 'Zona: Pigneto', 'Superficie: 62 mq', 'Piano: 0', 'f'],
+        ['Trilocale per famiglie', 1250, 'Zona: Centocelle', 'Superficie: 88 mq', 'Piano: 4', 'n'],
+        ['Loft open space', 1350, 'Zona: San Lorenzo', 'Superficie: 70 mq', 'Piano: 1', 'f'],
+        ['Bilocale silenzioso', 1120, 'Zona: Monti', 'Superficie: 48 mq', 'Piano: 2', 'f'],
+        ['Trilocale con due bagni', 1190, 'Zona: Pigneto', 'Superficie: 79 mq', 'Piano: 2', 'f'],
+        ['Monolocale per studenti', 690, 'Zona: San Lorenzo', 'Superficie: 28 mq', 'Piano: 3', 'n'],
+        ['Bilocale con cucina abitabile', 1040, 'Zona: Centocelle', 'Superficie: 60 mq', 'Piano: 1', 'f'],
+        ['Quadrilocale luminoso', 1650, 'Zona: Monti', 'Superficie: 105 mq', 'Piano: 3', 'f'],
+        ['Bilocale con doppia esposizione', 1290, 'Zona: Pigneto', 'Superficie: 66 mq', 'Piano: 4', 'f'],
+        ['Trilocale con giardino', 1380, 'Zona: Centocelle', 'Superficie: 92 mq', 'Piano: 0', 'f'],
+        ['Bilocale appena imbiancato', 950, 'Zona: San Lorenzo', 'Superficie: 45 mq', 'Piano: 2', 'f'],
+        ['Mansarda con travi a vista', 1010, 'Zona: Pigneto', 'Superficie: 54 mq', 'Piano: 5', 'f'],
+        ['Trilocale vicino al parco', 1220, 'Zona: Monti', 'Superficie: 76 mq', 'Piano: 1', 'n']
+      ],
+      ph: { n: ['#a8b3ae', 'Foto in arrivo', 'Foto in arrivo'] },
+      steps: [
+        { cat: 'Zona', v: 'Pigneto', say: 'Solo il Pigneto' },
+        { max: 'Prezzo', v: 1200, say: 'Fino a 1.200 € al mese' },
+        { sort: 'Superficie', dir: -1, say: 'Dalla più grande' }
+      ]
+    },
+    {
+      id: 'lavoro', label: 'Offerte di lavoro', url: 'trovalavoro.example/sviluppatori', brand: 'TrovaLavoro', color: '#6d28d9', item: 'offerta',
+      ad: 'Corso intensivo: diventa sviluppatore in 12 settimane',
+      rows: [
+        ['Sviluppatore frontend', 'Azienda: Nuvola Srl', 'Sede: Remoto', 'RAL: € 38.000', 'Contratto: Indeterminato', 'f'],
+        ['Sviluppatore backend Python', 'Azienda: Datafarm', 'Sede: Milano', 'RAL: € 42.000', 'Contratto: Indeterminato', 'f'],
+        ['Full stack junior', 'Azienda: Pixel Lab', 'Sede: Roma', 'RAL: € 28.000', 'Contratto: Determinato', 'n'],
+        ['Sviluppatore React', 'Azienda: Ondablu', 'Sede: Remoto', 'RAL: € 44.000', 'Contratto: Indeterminato', 'f'],
+        ['Mobile developer iOS', 'Azienda: Appetito', 'Sede: Torino', 'RAL: € 40.000', 'Contratto: Indeterminato', 'f'],
+        ['Data engineer', 'Azienda: Contafacile', 'Sede: Remoto', 'RAL: € 33.000', 'Contratto: Freelance', 'n'],
+        ['Sviluppatore Java', 'Azienda: Banca Lago', 'Sede: Milano', 'RAL: € 46.000', 'Contratto: Indeterminato', 'f'],
+        ['Web developer WordPress', 'Azienda: Studio Vela', 'Sede: Bologna', 'RAL: € 26.000', 'Contratto: Determinato', 'f'],
+        ['Sviluppatore AI', 'Azienda: Segnale', 'Sede: Remoto', 'RAL: € 52.000', 'Contratto: Indeterminato', 'f'],
+        ['DevOps engineer', 'Azienda: Retecasa', 'Sede: Roma', 'RAL: € 45.000', 'Contratto: Indeterminato', 'f'],
+        ['Sviluppatore Node.js', 'Azienda: Bottega Web', 'Sede: Remoto', 'RAL: € 36.000', 'Contratto: Freelance', 'f'],
+        ['QA tester', 'Azienda: Pixel Lab', 'Sede: Roma', 'RAL: € 27.000', 'Contratto: Determinato', 'n'],
+        ['Sviluppatore Flutter', 'Azienda: Mappami', 'Sede: Remoto', 'RAL: € 39.000', 'Contratto: Indeterminato', 'f'],
+        ['Tech lead', 'Azienda: Logistica Uno', 'Sede: Milano', 'RAL: € 62.000', 'Contratto: Indeterminato', 'f'],
+        ['Sviluppatore PHP', 'Azienda: Negozi Online', 'Sede: Torino', 'RAL: € 31.000', 'Contratto: Indeterminato', 'f'],
+        ['Automazioni e integrazioni', 'Azienda: Ufficio Smart', 'Sede: Remoto', 'RAL: € 34.000', 'Contratto: Freelance', 'n'],
+        ['Sviluppatore C#', 'Azienda: Energia Più', 'Sede: Bologna', 'RAL: € 41.000', 'Contratto: Indeterminato', 'f'],
+        ['Sviluppatore Vue', 'Azienda: Biglietti Ora', 'Sede: Remoto', 'RAL: € 37.000', 'Contratto: Indeterminato', 'f']
+      ],
+      ph: { n: ['#c4b8dd', 'Logo non disponibile', 'Logo'] },
+      steps: [
+        { cat: 'Sede', v: 'Remoto', say: 'Solo da remoto' },
+        { min: 'RAL', v: 35000, say: 'Almeno 35.000 € l\'anno' },
+        { sort: 'RAL', dir: -1, say: 'Dalla paga più alta' }
+      ]
+    },
+    {
+      id: 'cuffie', label: 'Cuffie', url: 'negozio.example/cuffie-wireless', brand: 'Negozio', color: '#e8590c', item: 'prodotto',
+      ad: 'Offerta lampo: -40% sugli smartwatch solo oggi',
+      rows: [
+        ['Cuffie over-ear con cancellazione del rumore', 249, 'Marca: Sony', 'Voto: 4,7', 'Consegna: Domani', 'f'],
+        ['Auricolari true wireless', 59, 'Marca: Soundcore', 'Voto: 4,3', 'Consegna: Domani', 'f'],
+        ['Cuffie sportive impermeabili', 89, 'Marca: JBL', 'Voto: 4,1', 'Consegna: In 3-5 giorni', 'f'],
+        ['Auricolari con custodia di ricarica', 129, 'Marca: Samsung', 'Voto: 4,5', 'Consegna: Domani', 'f'],
+        ['Cuffie da studio', 159, 'Marca: Audio-Technica', 'Voto: 4,8', 'Consegna: In 3-5 giorni', 'f'],
+        ['Cuffie per bambini', 29, 'Marca: JBL', 'Voto: 3,9', 'Consegna: Domani', 'n'],
+        ['Auricolari a conduzione ossea', 139, 'Marca: Shokz', 'Voto: 4,4', 'Consegna: Domani', 'f'],
+        ['Cuffie pieghevoli economiche', 25, 'Marca: Generica', 'Voto: 3,2', 'Consegna: In 3-5 giorni', 'n'],
+        ['Cuffie gaming con microfono', 79, 'Marca: HyperX', 'Voto: 4,4', 'Consegna: Domani', 'f'],
+        ['Auricolari premium', 279, 'Marca: Apple', 'Voto: 4,6', 'Consegna: Domani', 'f'],
+        ['Cuffie over-ear leggere', 179, 'Marca: Bose', 'Voto: 4,6', 'Consegna: Domani', 'f'],
+        ['Auricolari per la corsa', 69, 'Marca: Soundcore', 'Voto: 4,0', 'Consegna: In 3-5 giorni', 'f'],
+        ['Cuffie con bassi potenziati', 99, 'Marca: Sony', 'Voto: 4,2', 'Consegna: Domani', 'f'],
+        ['Cuffie da ufficio con microfono', 119, 'Marca: Jabra', 'Voto: 4,5', 'Consegna: Domani', 'f'],
+        ['Auricolari con cavo', 15, 'Marca: Generica', 'Voto: 3,6', 'Consegna: Domani', 'n'],
+        ['Cuffie hi-fi aperte', 199, 'Marca: Sennheiser', 'Voto: 4,9', 'Consegna: In 3-5 giorni', 'f']
+      ],
+      ph: { n: ['#cbd5e1', 'Immagine non disponibile', 'Nessuna immagine', '#475569'] },
+      steps: [
+        { cat: 'Consegna', v: 'Domani', say: 'Che arrivano domani' },
+        { max: 'Prezzo', v: 150, say: 'Fino a 150 €' },
+        { sort: 'Voto', dir: -1, say: 'Dal voto più alto' }
+      ]
+    }
+  ];
+
+  /* Ogni sito è una pagina vera dentro l'iframe: elenco, pubblicità in mezzo, foto e immagini generiche */
+  function siteHtml(s) {
+    var items = s.rows.map(function (r, i) {
+      var kind = r[5];
+      var img = kind === 'f' ? real(s.id === 'lavoro' ? r[1].replace('Azienda: ', '') : r[0].split(' ')[0]) : [svg(s.ph[kind][0], s.ph[kind][2], s.ph[kind][3]), s.ph[kind][1]];
+      var price = typeof r[1] === 'number' ? '<span class="price">€ ' + fmt(r[1]) + '</span>' : '<span>' + esc(r[1]) + '</span>';
+      var li = '<li class="item"><img class="foto" src="' + img[0] + '" alt="' + esc(img[1]) + '"><div class="txt"><h3>' + esc(r[0]) + '</h3><div class="meta">' + price +
+        '<span>' + esc(r[2]) + '</span><span>' + esc(r[3]) + '</span><span>' + esc(r[4]) + '</span></div></div></li>';
+      if (i === 2 || i === 9) li += '<li class="ad">Pubblicità · ' + esc(s.ad) + '</li>';
+      return li;
+    }).join('');
+    return '<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>' +
+      'body{margin:0;font:15px/1.35 Arial,Helvetica,sans-serif;background:#f1f1f1;color:#111}' +
+      'header{background:' + s.color + ';color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px}' +
+      'header b{font-size:19px;letter-spacing:-.3px}header span{opacity:.85;font-size:13px}' +
+      '.bar{background:#fff;border-bottom:1px solid #ddd;padding:8px 16px;font-size:13px;color:#555}' +
+      'ul.lista{list-style:none;margin:0;padding:10px;display:grid;gap:8px}' +
+      '.item{display:flex;gap:12px;background:#fff;border-radius:8px;padding:8px;border:1px solid #e3e3e3}' +
+      '.foto{width:104px;height:72px;object-fit:cover;border-radius:6px;flex:none}' +
+      '.txt{min-width:0}.item h3{margin:0 0 4px;font-size:15px}' +
+      '.meta{display:flex;flex-wrap:wrap;gap:2px 10px;font-size:13px;color:#555}.price{color:' + s.color + ';font-weight:700}' +
+      '.ad{background:#fff3bf;border:1px dashed #e0b400;border-radius:8px;padding:12px;font-size:13px;color:#6b5600}' +
+      '@media(min-width:700px){ul.lista{margin-right:400px}}' +
+      '</style></head><body><header><b>' + esc(s.brand) + '</b><span>' + s.rows.length + ' risultati</span></header>' +
+      '<div class="bar">Ordina: più recenti · Nessun filtro disponibile</div><ul class="lista">' + items + '</ul></body></html>';
+  }
+
+  /* ================= regia della demo ================= */
+  var frame = document.getElementById('demo');
+  var box = document.getElementById('frame');
+  var lens = document.getElementById('lens');
+  var say = document.getElementById('say');
+  var tryBtn = document.getElementById('try');
+  var urlEl = document.getElementById('url');
+  var sitesEl = document.querySelector('.sites');
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cur = 0, run = 0, auto = !reduce, userOwns = false;
+
+  SITES.forEach(function (s, i) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'site'; b.textContent = s.label;
+    b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+    b.addEventListener('click', function () { auto = true; userOwns = false; show(i, true); });
+    sitesEl.appendChild(b);
   });
 
-  /* prova in pagina: stesso codice della bookmarklet */
-  var rs = document.getElementById('run-status');
-  document.getElementById('run').addEventListener('click', function () {
-    if (window.__listLens) { window.__listLens.toggle(); rs.textContent = 'Pannello aperto o chiuso.'; return; }
-    var s = document.createElement('script');
-    s.textContent = document.getElementById('ll-src').textContent;
-    document.body.appendChild(s);
-    rs.textContent = window.__listLens ? 'Avviato. Usa il pannello in basso.' : 'Non si avvia in questo contesto.';
+  var Stop = {};
+  function wait(ms, id) { return new Promise(function (ok, ko) { setTimeout(function () { id === run ? ok() : ko(Stop); }, ms); }); }
+  function W() { return frame.contentWindow; }
+  function D() { return frame.contentDocument; }
+  function L() { return W().__listLens; }
+  function SH() { var h = D().getElementById('listlens-host'); return h && h.shadowRoot; }
+  function narrow() { return frame.clientWidth < 700; }
+
+  function point(el, id) {
+    var fr = frame.getBoundingClientRect(), br = box.getBoundingClientRect(), r = el.getBoundingClientRect();
+    var x = fr.left - br.left + r.left + Math.min(r.width / 2, 60), y = fr.top - br.top + r.top + r.height / 2;
+    lens.classList.add('on');
+    lens.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+    return wait(reduce ? 50 : 680, id).then(function () { return [x, y]; });
+  }
+  function tap(el, id) {
+    return point(el, id).then(function (p) {
+      lens.classList.add('tap');
+      var rp = document.createElement('div'); rp.className = 'ripple';
+      rp.style.left = p[0] + 'px'; rp.style.top = p[1] + 'px';
+      box.appendChild(rp); setTimeout(function () { rp.remove(); }, 600);
+      return wait(140, id).then(function () { lens.classList.remove('tap'); });
+    });
+  }
+  function caption(html) { say.innerHTML = html; }
+  function scrollPanelTo(el, id) {
+    var body = SH().querySelector('.body');
+    if (!body) return wait(1, id);
+    var top = el.getBoundingClientRect().top - body.getBoundingClientRect().top + body.scrollTop - 24;
+    body.scrollTo({ top: Math.max(0, top), behavior: reduce ? 'auto' : 'smooth' });
+    return wait(reduce ? 50 : 420, id);
+  }
+
+  /* Gli annunci scivolano al loro posto (FLIP) e quelli esclusi svaniscono dove erano */
+  function capture() {
+    var doc = D(), win = W();
+    var items = [].slice.call(doc.querySelectorAll('.item')).filter(function (e) { return e.offsetParent; });
+    var before = new Map();
+    items.forEach(function (e) { var r = e.getBoundingClientRect(); before.set(e, { r: r, clone: e.cloneNode(true) }); });
+    return function invert() {
+      var anims = [];
+      before.forEach(function (b, e) {
+        if (e.offsetParent) {
+          var r = e.getBoundingClientRect(), dx = b.r.left - r.left, dy = b.r.top - r.top;
+          if (dx || dy) anims.push(e.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'none' }],
+            { duration: reduce ? 1 : 560, easing: 'cubic-bezier(.2,.75,.2,1)', fill: 'backwards', delay: 0 }));
+        } else {
+          var g = b.clone;
+          g.removeAttribute('data-ll-h'); g.style.removeProperty('display'); g.style.outline = '';
+          g.style.cssText += ';position:absolute;margin:0;pointer-events:none;z-index:1;left:' + (b.r.left + win.scrollX) + 'px;top:' + (b.r.top + win.scrollY) + 'px;width:' + b.r.width + 'px;height:' + b.r.height + 'px;box-sizing:border-box';
+          doc.body.appendChild(g);
+          anims.push(g.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.94)' }],
+            { duration: reduce ? 1 : 380, easing: 'ease-in', fill: 'forwards' }));
+          anims[anims.length - 1].finished.then(function () { g.remove(); }, function () { g.remove(); });
+        }
+      });
+      anims.forEach(function (a) { a.pause(); });
+      return function play() { anims.forEach(function (a) { a.play(); }); };
+    };
+  }
+
+  function counts() { var S = L().S; return '<b>' + S.shown + '</b> su <b>' + S.rows.length + '</b>'; }
+  function cardOf(name) {
+    var cards = [].slice.call(SH().querySelectorAll('.card'));
+    return cards.find(function (c) { return c.querySelector('.ft b').textContent === name; });
+  }
+
+  /* Un passo della demo: apre il pannello se serve (telefono), agisce sul controllo vero di ListLens,
+     chiude il pannello sul telefono e mostra la lista che cambia */
+  function step(s, st, id) {
+    var sh = SH(), p = Promise.resolve();
+    if (narrow() && !L().S.open) p = p.then(function () { return tap(sh.querySelector('.fab'), id); }).then(function () { sh.querySelector('.fab').click(); return wait(380, id); });
+    var target, act;
+    p = p.then(function () {
+      sh = SH();
+      if (st.cat) {
+        var chips = [].slice.call(cardOf(st.cat).querySelectorAll('.chip'));
+        target = chips.find(function (c) { return c.textContent.indexOf(st.v + ' ·') === 0; });
+        act = function () { target.click(); };
+      } else if (st.min || st.max) {
+        target = cardOf(st.min || st.max).querySelectorAll('.mm input')[st.min ? 0 : 1];
+        act = function () { target.value = String(st.v); target.dispatchEvent(new (W().Event)('input', { bubbles: true })); };
+      } else if (st.sort) {
+        target = sh.querySelector('.row select');
+        act = function () {
+          var opt = [].slice.call(target.options).find(function (o) { return o.textContent === 'Ordina per ' + st.sort; });
+          target.value = opt.value; target.dispatchEvent(new (W().Event)('change', { bubbles: true }));
+        };
+      }
+      return scrollPanelTo(target, id);
+    }).then(function () { caption(esc(st.say) + '…'); return tap(target, id); }).then(function () {
+      if ((st.min || st.max) && !reduce) {
+        /* scrive il numero cifra per cifra, poi lo applica in un colpo solo */
+        var digits = String(st.v), k = 0;
+        return (function typeNext() {
+          if (k >= digits.length) return wait(160, id);
+          target.value = digits.slice(0, ++k);
+          return wait(90, id).then(typeNext);
+        })();
+      }
+    }).then(function () {
+      var invert = capture();
+      act();
+      if (st.sort && st.dir < 0) {
+        var dirBtn = SH().querySelector('.dir');
+        if (L().S.sort && L().S.sort.dir > 0) dirBtn.click();
+      }
+      var play = invert();
+      var q = Promise.resolve();
+      if (narrow()) q = q.then(function () { var x = SH().querySelector('.x'); return tap(x, id).then(function () { x.click(); return wait(80, id); }); });
+      return q.then(function () { play(); caption(esc(st.say) + ': ' + counts()); return wait(reduce ? 400 : 1500, id); });
+    });
+    return p;
+  }
+
+  function load(s) {
+    return new Promise(function (ok) {
+      frame.onload = function () { ok(); };
+      frame.srcdoc = siteHtml(s);
+    });
+  }
+  function inject() {
+    try { W().localStorage.removeItem('listlens:srcdoc'); } catch (e) {}
+    var sc = D().createElement('script');
+    sc.textContent = document.getElementById('ll-src').textContent;
+    D().body.appendChild(sc);
+    /* chi tocca la demo la prende in mano: la regia si ferma */
+    D().addEventListener('pointerdown', function (e) { if (e.isTrusted) takeOver(); }, true);
+  }
+
+  function stagger(id) {
+    /* gli elementi riconosciuti si accendono uno dopo l'altro */
+    var els = L().S.rows.length ? [] : [].slice.call(D().querySelectorAll('.item'));
+    els.forEach(function (e) { e.style.outlineColor = 'transparent'; });
+    els.forEach(function (e, i) { setTimeout(function () { if (id === run) e.style.outlineColor = '#2563eb'; }, reduce ? 0 : 50 * i); });
+    return wait(reduce ? 50 : 50 * els.length + 450, id);
+  }
+
+  function direct(s, id) {
+    var sh;
+    caption('Un sito con ' + s.rows.length + ' ' + (s.item === 'casa' ? 'case' : s.item === 'offerta' ? 'offerte' : s.item === 'prodotto' ? 'prodotti' : 'annunci') + ', pubblicità in mezzo e nessun filtro.');
+    return wait(reduce ? 300 : 1500, id).then(function () {
+      inject(); sh = SH();
+      caption('Avvii ListLens dai preferiti.');
+      return wait(reduce ? 100 : 700, id);
+    }).then(function () { return tap(sh.querySelector('.pri'), id); }).then(function () {
+      sh.querySelector('.pri').click();
+      caption('Tocchi un ' + s.item + ' qualsiasi.');
+      return tap(D().querySelectorAll('.item h3')[1], id);
+    }).then(function () {
+      D().querySelectorAll('.item h3')[1].click();
+      caption('ListLens riconosce la lista e ne legge i campi. Le pubblicità restano fuori.');
+      return stagger(id);
+    }).then(function () {
+      var ok = [].slice.call(SH().querySelectorAll('.banner .pri'))[0];
+      return tap(ok, id).then(function () { ok.click(); return wait(500, id); });
+    }).then(function () {
+      if (narrow()) { var x = SH().querySelector('.x'); return tap(x, id).then(function () { x.click(); return wait(200, id); }); }
+    }).then(function () {
+      return s.steps.reduce(function (p, st) { return p.then(function () { return step(s, st, id); }); }, Promise.resolve());
+    }).then(function () {
+      lens.classList.remove('on');
+      var S = L().S;
+      caption('Da <b>' + S.rows.length + '</b> a <b>' + S.shown + '</b>, nell\'ordine che volevi. Ora tocca a te.');
+      tryBtn.textContent = 'Ora prova tu';
+      return wait(5200, id);
+    }).then(function () { if (auto && !userOwns) show((cur + 1) % SITES.length, true); });
+  }
+
+  function show(i, play) {
+    var id = ++run;
+    cur = i; userOwns = false;
+    lens.classList.remove('on');
+    [].forEach.call(sitesEl.querySelectorAll('.site'), function (b, k) { b.setAttribute('aria-pressed', k === i ? 'true' : 'false'); });
+    urlEl.textContent = SITES[i].url;
+    tryBtn.textContent = 'Ora prova tu';
+    load(SITES[i]).then(function () {
+      if (id !== run) return;
+      if (!play) { inject(); caption('Tocca <b>Scegli la lista</b> in basso, poi un ' + SITES[i].item + '.'); tryBtn.textContent = 'Guarda la demo'; return; }
+      return direct(SITES[i], id);
+    }).catch(function (e) { if (e !== Stop) { caption('La demo si è fermata. Puoi provarla tu: tocca Scegli la lista.'); if (window.console) console.error(e); } });
+  }
+
+  function takeOver() {
+    if (userOwns) return;
+    userOwns = true; auto = false; run++;
+    lens.classList.remove('on');
+    caption('Tocca pure: è ListLens vera, sullo stesso sito di prova. Prova i filtri e l\'ordinamento.');
+    tryBtn.textContent = 'Guarda di nuovo la demo';
+  }
+  tryBtn.addEventListener('click', function () {
+    if (userOwns || tryBtn.textContent !== 'Ora prova tu') { auto = true; show(cur, true); return; }
+    takeOver();
+    /* se la regia era a metà, rimette il pannello in vista */
+    try { var S = L().S; if (S.mode === 'tools' && !S.open) { S.open = true; L().toggle(); L().toggle(); } } catch (e) {}
   });
+
+  /* parte quando la demo è in vista; con "riduci movimento" aspetta un tocco */
+  var started = false;
+  function start() { if (started) return; started = true; show(0, !reduce); }
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (en, ob) { if (en.some(function (x) { return x.isIntersecting; })) { ob.disconnect(); start(); } }, { threshold: 0.25 }).observe(frame);
+  } else start();
 })();
 </script>
